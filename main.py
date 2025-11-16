@@ -30,23 +30,28 @@ wnd = _window.Window()
 # Main Loop
 #####################################
 
+def call_plugins(plugin_queue, method_name):
+    for plugin in plugin_queue:
+        getattr(plugin, method_name)()
+
 if __name__ == "__main__":
-    # Plugin.init()
     wnd.init()
 
+    # Plugin.init()
+    call_plugins(plugin_queue, "init")
+
     # Plugin.assemble()
-    for plugin in plugin_queue:
-        plugin.assemble()
+    call_plugins(plugin_queue, "assemble")
 
     # Plugin.update()
     while not glfw.window_should_close(wnd.window):
         wnd.update()
-        for plugin in plugin_queue:
-            plugin.update()
+        call_plugins(plugin_queue, "update")
 
     # Plugin.reset() in certain conditions
+    call_plugins(plugin_queue, "reset")
 
     # Plugin.release() on reload
-    for plugin in plugin_queue:
-        plugin.release()
+    call_plugins(plugin_queue, "release")
+    
     wnd.release()
