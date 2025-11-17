@@ -44,10 +44,13 @@ class Window(Plugin):
 
         # set clear color & clear the screen
         glClearColor(*BG_COLOR)
-        glClear(GL_COLOR_BUFFER_BIT)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
+    def post_update(self):
         # swap front and back buffers
         glfw.swap_buffers(self.window)
+        
+        return
 
     # reset any modified parameters or files
     def reset(self):

@@ -22,6 +22,10 @@ class Plugin(ABC):
     @abstractmethod
     def update(self):
         pass
+    
+    # executed at end of frame, after all plugin updates have looped
+    def post_update(self):
+        pass
 
     # reset any modified parameters or files
     @abstractmethod

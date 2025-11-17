@@ -6,6 +6,8 @@ import glfw
 import plugins.window as _window
 import plugins.camera as _camera
 
+import projects.helloCube as HELLO
+
 plugin_queue = []
 
 wnd = _window.Window()
@@ -13,6 +15,8 @@ wnd = _window.Window()
 
 cam = _camera.Camera(window=wnd)
 plugin_queue.append(cam)
+
+plugin_queue.append(HELLO.Hello())
 
 #####################################
 # Assemble Plugins
@@ -38,7 +42,7 @@ def call_plugins(plugin_queue, method_name):
     for plugin in plugin_queue:
         getattr(plugin, method_name)()
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
     wnd.init()
 
     # Plugin.init()
@@ -47,10 +51,13 @@ if __name__ == "__main__":
     # Plugin.assemble()
     call_plugins(plugin_queue, "assemble")
 
-    # Plugin.update()
+    # Plugin.update(), .post_update()
     while not glfw.window_should_close(wnd.window):
         wnd.update()
         call_plugins(plugin_queue, "update")
+        
+        wnd.post_update()
+        call_plugins(plugin_queue, "post_update")
 
     # Plugin.reset() in certain conditions
     call_plugins(plugin_queue, "reset")

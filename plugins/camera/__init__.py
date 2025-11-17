@@ -63,6 +63,9 @@ class Camera(core.Plugin):
         glfw.set_mouse_button_callback(self.wnd.window, self.mouse_button)
         glfw.set_scroll_callback(self.wnd.window, self.mouse_scroll)
         
+        # print control hints to console
+        self.control_hint()
+        
         return
 
     # executed every frame
@@ -177,9 +180,9 @@ class Camera(core.Plugin):
         elif key == glfw.KEY_DOWN:  self.orbit(pitch=-self.orbit_sensitivity)
 
     def mouse_button(self, window, button, action, mods):
-        if button == glfw.MOUSE_LEFT_BUTTON:
+        if button == glfw.MOUSE_BUTTON_LEFT:
             self.left_dragging = (action == glfw.PRESS)
-        elif button == glfw.MOUSE_RIGHT_BUTTON:
+        elif button == glfw.MOUSE_BUTTON_RIGHT:
             self.right_dragging = (action == glfw.PRESS)
             
         self.last_mouse = glfw.get_cursor_pos(window)
