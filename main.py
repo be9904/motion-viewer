@@ -6,6 +6,7 @@
 import glfw
 
 # local imports
+import core
 import core.window as _window
 import plugins.camera as _camera
 import projects.helloCube as HELLO
@@ -17,6 +18,9 @@ import projects.helloCube2 as HELLO2
 
 # plugin queue to loop at runtime
 plugin_queue = []
+
+# shared data that is passed between plugins
+shared_data = core.SharedData()
 
 # setup window
 wnd = _window.Window()
@@ -35,20 +39,20 @@ plugin_queue.append(HELLO2.HelloCube2())
 # Main Loop
 #####################################
 
-def call_plugins(plugin_queue, method_name):
-    for plugin in plugin_queue:
+def call_plugins(queue, method_name):
+    for plugin in queue:
         getattr(plugin, method_name)()
 
 if __name__ == "__main__":    
     wnd.init()
 
-    # Plugin.init()
-    call_plugins(plugin_queue, "init")
-
     # Plugin.assemble()
     call_plugins(plugin_queue, "assemble")
 
-    # Plugin.update(), .post_update()
+    # Plugin.init()
+    call_plugins(plugin_queue, "init")
+
+    # Plugin.update(), Plugin.post_update()
     while not glfw.window_should_close(wnd.window):
         wnd.update()
         call_plugins(plugin_queue, "update")
@@ -57,7 +61,7 @@ if __name__ == "__main__":
         call_plugins(plugin_queue, "post_update")
 
     # Plugin.reset() in certain conditions
-    call_plugins(plugin_queue, "reset")
+    # call_plugins(plugin_queue, "reset")
 
     # Plugin.release() on reload
     call_plugins(plugin_queue, "release")

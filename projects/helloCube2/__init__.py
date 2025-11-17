@@ -3,7 +3,7 @@ from core.mesh import *
 
 class HelloCube2(core.Plugin):
     def __init__(self):
-        self.cube = Cube(size=2, position=(4,3,3), rotation=(120, 30, 90))
+        self.cube = Cube(position=(4,3,3), rotation=(120, 30, 90), scale=(1,1,1))
     
     # assemble all configurations and files
     def assemble(self):
@@ -24,8 +24,6 @@ class HelloCube2(core.Plugin):
 
     # executed every frame
     def update(self):
-        glColor3f(0.8, 0.2, 0.2)
-        self.cube.draw()
         return
 
     # reset any modified parameters or files

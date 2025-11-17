@@ -8,12 +8,6 @@ import glfw
 import core
 from .config import *
 
-def normalize(v):
-    norm = np.linalg.norm(v)
-    if norm == 0:
-        return v
-    return v / norm
-
 class Camera(core.Plugin):
     def __init__(self, window=None):
         # reference to program window
@@ -26,7 +20,7 @@ class Camera(core.Plugin):
         self.target = np.array([0.0, 0.0, 0.0], dtype=np.float32)
         
         # projection parameters
-        self.fov = 60.0
+        self.fovy = np.radians(60.0)
         self.near = 0.1
         self.far = 100.0
         if self.wnd is not None:
@@ -47,6 +41,8 @@ class Camera(core.Plugin):
     
     # assemble all configurations and files
     def assemble(self):
+        # export to shared data
+        core.SharedData.export_data("camera", self)
         return
 
     # setup basic settings (window, gui, logs etc)
@@ -70,19 +66,17 @@ class Camera(core.Plugin):
 
     # executed every frame
     def update(self):
-        # apply camera projection
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(self.fov, self.aspect, self.near, self.far)
+        # update aspect in case window resized
+        self.aspect = self.wnd.width / self.wnd.height
 
-        # apply camera view
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-        gluLookAt(
-            self.position[0], self.position[1], self.position[2],
-            self.target[0], self.target[1], self.target[2],
-            self.up[0], self.up[1], self.up[2]
-        )
+        # compute projection matrix
+        self.projection_matrix = core.get_projection_matrix(self)
+
+        # compute view matrix from camera position and target
+        self.view_matrix = core.get_view_matrix(self)
+
+        # export to shared data
+        core.SharedData.export_data("camera", self)
 
         return
 
@@ -107,8 +101,8 @@ class Camera(core.Plugin):
 
     # move camera
     def move(self, direction):
-        forward = normalize(self.target - self.position)
-        right = normalize(np.cross(self.up, forward))
+        forward = core.normalize(self.target - self.position)
+        right = core.normalize(np.cross(self.up, forward))
         up = self.up
 
         world = (
@@ -126,14 +120,14 @@ class Camera(core.Plugin):
 
     # zoom camera toward target
     def zoom(self, amount):
-        forward = normalize(self.target - self.position)
+        forward = core.normalize(self.target - self.position)
         self.position += forward * amount
 
     # pan camera perpendicular to view direction
     def pan(self, dx=0, dy=0):
-        forward = normalize(self.target - self.position)
-        right = normalize(np.cross(self.up, forward))
-        up = normalize(np.cross(forward, right))
+        forward = core.normalize(self.target - self.position)
+        right = core.normalize(np.cross(self.up, forward))
+        up = core.normalize(np.cross(forward, right))
         self.position += right * dx + up * dy
         self.target += right * dx + up * dy
 

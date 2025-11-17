@@ -46,6 +46,7 @@ class Window(Plugin):
         glClearColor(*BG_COLOR)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
+    # executed after drawing elements
     def post_update(self):
         # swap front and back buffers
         glfw.swap_buffers(self.window)
