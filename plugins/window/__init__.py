@@ -10,6 +10,20 @@ class Window(Plugin):
         self.window = None
         self.width = WIDTH
         self.height = HEIGHT
+        
+        # init GLFW
+        if not glfw.init():
+            raise Exception(f"{self.__class__.__name__}.init(): failed in glfw.init()")
+
+        # create window
+        self.window = glfw.create_window(WIDTH, HEIGHT, TITLE, None, None)
+
+        if not self.window:
+            glfw.terminate()
+            raise Exception("Failed to create GLFW window")
+
+        # make the OpenGL context current
+        glfw.make_context_current(self.window)
 
     # assemble all configurations and files
     def assemble(self):
@@ -22,21 +36,7 @@ class Window(Plugin):
 
     # setup basic settings (window, gui, logs etc)
     def init(self):
-        # init GLFW
-        if not glfw.init():
-            raise Exception(f"{init.__name__}(): failed in glfw.init()")
-
-        # create window
-        window = glfw.create_window(WIDTH, HEIGHT, TITLE, None, None)
-
-        if not window:
-            glfw.terminate()
-            raise Exception("Failed to create GLFW window")
-
-        # make the OpenGL context current
-        glfw.make_context_current(window)
-        
-        self.window = window
+        pass
 
     # executed every frame
     def update(self):

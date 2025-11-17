@@ -11,7 +11,7 @@ plugin_queue = []
 wnd = _window.Window()
 # plugin_queue.append({plugin})
 
-cam = _camera.Camera()
+cam = _camera.Camera(window=wnd)
 plugin_queue.append(cam)
 
 #####################################

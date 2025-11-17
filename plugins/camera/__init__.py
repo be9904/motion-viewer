@@ -1,7 +1,6 @@
 # local imports
 import core
 from .config import *
-from .trackball import *
 
 # library imports
 import numpy as np
@@ -18,7 +17,7 @@ def normalize(v):
 class Camera(core.Plugin):
     def __init__(self, window=None):
         # reference to program window
-        self.window = window
+        self.wnd = window
         
         # camera position, rotation (Euler angles -> pitch, yaw, roll), up vector and target (lookAt)
         self.position = np.array([0.0, 0.0, 5.0], dtype=np.float32)
@@ -30,8 +29,8 @@ class Camera(core.Plugin):
         self.fov = 60.0
         self.near = 0.1
         self.far = 100.0
-        if self.window is not None:
-            self.aspect = self.window.width / self.window.height
+        if self.wnd is not None:
+            self.aspect = self.wnd.width / self.wnd.height
         else:
             self.aspect = 1.0
         
@@ -56,11 +55,13 @@ class Camera(core.Plugin):
         glEnable(GL_DEPTH_TEST)
         glDepthFunc(GL_LESS)
         
-        # register GLUT callbacks
-        glfw.set_key_callback(self.keyboard)
-        glfw.set_cursor_pos_callback(self.mouse_motion)
-        glfw.set_mouse_button_callback(self.mouse_button)
-        glfw.set_scroll_callback(self.mouse_scroll)
+        # register glfw callbacks
+        if not self.wnd:
+            raise Exception(f"{self.__class__.__name__}.init(): missing window reference")
+        glfw.set_key_callback(self.wnd.window, self.keyboard)
+        glfw.set_cursor_pos_callback(self.wnd.window, self.mouse_motion)
+        glfw.set_mouse_button_callback(self.wnd.window, self.mouse_button)
+        glfw.set_scroll_callback(self.wnd.window, self.mouse_scroll)
         
         return
 
