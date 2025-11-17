@@ -7,7 +7,7 @@ from .config import *
 
 class {classname}(core.Plugin):
     def __init__(self):
-        super().__init__()
+        super().__init__() # remove after implementation
     
     # assemble all configurations and files
     def assemble(self):
@@ -15,7 +15,7 @@ class {classname}(core.Plugin):
 
     # setup basic settings (window, gui, logs etc)
     def init(self):
-        pass
+        return
 
     # executed every frame
     def update(self):

@@ -8,13 +8,16 @@ class Window(Plugin):
     def __init__(self):
         # super().__init__()
         self.window = None
+        self.width = WIDTH
+        self.height = HEIGHT
 
     # assemble all configurations and files
     def assemble(self):
         # add ui
 
         # set keyboard callbacks
-        glfw.set_key_callback(self.window, keyboard_callback)
+        glfw.set_key_callback(self.window, key_callback)
+        
         return
 
     # setup basic settings (window, gui, logs etc)

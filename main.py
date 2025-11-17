@@ -4,11 +4,15 @@
 
 import glfw
 import plugins.window as _window
+import plugins.camera as _camera
 
 plugin_queue = []
 
 wnd = _window.Window()
 # plugin_queue.append({plugin})
+
+cam = _camera.Camera()
+plugin_queue.append(cam)
 
 #####################################
 # Assemble Plugins
