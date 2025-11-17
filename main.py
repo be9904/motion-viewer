@@ -1,40 +1,35 @@
 #####################################
-# List of Plugins
+# Plugins & Libraries
 #####################################
 
+# library imports
 import glfw
-import plugins.window as _window
-import plugins.camera as _camera
 
+# local imports
+import core.window as _window
+import plugins.camera as _camera
 import projects.helloCube as HELLO
 import projects.helloCube2 as HELLO2
-
-plugin_queue = []
-
-wnd = _window.Window()
-# plugin_queue.append({plugin})
-
-cam = _camera.Camera(window=wnd)
-plugin_queue.append(cam)
-
-plugin_queue.append(HELLO.HelloCube())
-plugin_queue.append(HELLO2.HelloCube2())
 
 #####################################
 # Assemble Plugins
 #####################################
 
-# setup renderer
+# plugin queue to loop at runtime
+plugin_queue = []
 
-# draw axes and grid plane
+# setup window
+wnd = _window.Window()
 
 # setup camera
-
-# setup trackball
-
-# setup lighting
+cam = _camera.Camera(window=wnd)
+plugin_queue.append(cam)
 
 # add button for file selection
+
+# add projects
+plugin_queue.append(HELLO.HelloCube())
+plugin_queue.append(HELLO2.HelloCube2())
 
 #####################################
 # Main Loop

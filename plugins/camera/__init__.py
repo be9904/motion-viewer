@@ -1,12 +1,12 @@
-# local imports
-import core
-from .config import *
-
 # library imports
 import numpy as np
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import glfw
+
+# local imports
+import core
+from .config import *
 
 def normalize(v):
     norm = np.linalg.norm(v)
