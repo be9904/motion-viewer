@@ -105,10 +105,20 @@ class Camera(core.Plugin):
     # Trackball & Movement
     ##############################################
 
-    # move camera in world space
+    # move camera
     def move(self, direction):
-        self.position += np.array(direction, dtype=np.float32)
-        self.target += np.array(direction, dtype=np.float32)
+        forward = normalize(self.target - self.position)
+        right = normalize(np.cross(self.up, forward))
+        up = self.up
+
+        world = (
+            right * direction[0] +
+            up * direction[1] +
+            forward * direction[2]
+        )
+
+        self.position += world
+        self.target += world
 
     # rotate camera in place (Euler angles)
     def rotate(self, pitch=0, yaw=0, roll=0):
@@ -122,8 +132,8 @@ class Camera(core.Plugin):
     # pan camera perpendicular to view direction
     def pan(self, dx=0, dy=0):
         forward = normalize(self.target - self.position)
-        right = normalize(np.cross(forward, self.up))
-        up = normalize(np.cross(right, forward))
+        right = normalize(np.cross(self.up, forward))
+        up = normalize(np.cross(forward, right))
         self.position += right * dx + up * dy
         self.target += right * dx + up * dy
 
@@ -166,10 +176,10 @@ class Camera(core.Plugin):
             return
         
         # WASD+QE movement
-        if key == glfw.KEY_W:   self.move([0, 0, -self.move_speed])
-        elif key == glfw.KEY_S: self.move([0, 0, self.move_speed])
-        elif key == glfw.KEY_A: self.move([-self.move_speed, 0, 0])
-        elif key == glfw.KEY_D: self.move([self.move_speed, 0, 0])
+        if key == glfw.KEY_W:   self.move([0, 0, self.move_speed])
+        elif key == glfw.KEY_S: self.move([0, 0, -self.move_speed])
+        elif key == glfw.KEY_A: self.move([self.move_speed, 0, 0])
+        elif key == glfw.KEY_D: self.move([-self.move_speed, 0, 0])
         elif key == glfw.KEY_Q: self.move([0, -self.move_speed, 0])
         elif key == glfw.KEY_E: self.move([0, self.move_speed, 0])
         
