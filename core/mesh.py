@@ -6,8 +6,11 @@ class Mesh:
         pass
 
 class Cube:
-    def __init__(self, size=1.0):
+    def __init__(self, position=(0,0,0), rotation=(0,0,0), size=1.0):
+        self.position = np.array(position, dtype=np.float32)
+        self.rotation = np.array(rotation, dtype=np.float32)
         self.size = size
+        
         self.vertices = np.array([
             [-1, -1, -1],
             [ 1, -1, -1],
@@ -34,6 +37,13 @@ class Cube:
         ]
 
     def draw(self):
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glTranslatef(*self.position)
+        glRotatef(self.rotation[0], 1, 0, 0)
+        glRotatef(self.rotation[1], 0, 1, 0)
+        glRotatef(self.rotation[2], 0, 0, 1)
+        
         glBegin(GL_QUADS)
         for i, face in enumerate(self.faces):
             glColor3fv(self.colors[i])
@@ -45,3 +55,4 @@ class Cube:
             for vertex_idx in face:
                 glVertex3fv(self.vertices[vertex_idx])
         glEnd()
+        glPopMatrix()

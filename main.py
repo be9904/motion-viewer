@@ -7,6 +7,7 @@ import plugins.window as _window
 import plugins.camera as _camera
 
 import projects.helloCube as HELLO
+import projects.helloCube2 as HELLO2
 
 plugin_queue = []
 
@@ -16,7 +17,8 @@ wnd = _window.Window()
 cam = _camera.Camera(window=wnd)
 plugin_queue.append(cam)
 
-plugin_queue.append(HELLO.Hello())
+plugin_queue.append(HELLO.HelloCube())
+plugin_queue.append(HELLO2.HelloCube2())
 
 #####################################
 # Assemble Plugins

@@ -1,9 +1,9 @@
 import core
 from core.mesh import *
 
-class HelloCube(core.Plugin):
+class HelloCube2(core.Plugin):
     def __init__(self):
-        self.cube = Cube(size=2)
+        self.cube = Cube(size=2, position=(4,3,3), rotation=(120, 30, 90))
     
     # assemble all configurations and files
     def assemble(self):
