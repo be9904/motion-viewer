@@ -41,24 +41,14 @@ class Plugin(ABC):
 
 class SharedData:
     _data = {}
-    _callbacks = {}
 
     @classmethod
     def export_data(cls, name, value):
         cls._data[name] = value
-        if name in cls._callbacks:
-            for callback in cls._callbacks[name]:
-                callback()
 
     @classmethod
     def import_data(cls, name):
         return cls._data.get(name, None)
-
-    @classmethod
-    def set_callback(cls, name, callback):
-        if name not in cls._callbacks:
-            cls._callbacks[name] = []
-        cls._callbacks.setdefault(name, []).append(callback)
 
 #####################################
 # TRANSFORMATION

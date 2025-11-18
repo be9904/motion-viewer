@@ -75,9 +75,6 @@ class Camera(core.Plugin):
         # compute view matrix from camera position and target
         self.view_matrix = core.get_view_matrix(self)
 
-        # export to shared data
-        core.SharedData.export_data("camera", self)
-
         return
 
     # reset any modified parameters or files

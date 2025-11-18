@@ -33,7 +33,6 @@ plugin_queue.append(cam)
 
 # add projects
 plugin_queue.append(HELLO.HelloCube())
-plugin_queue.append(HELLO2.HelloCube2())
 
 #####################################
 # Main Loop

@@ -18,7 +18,6 @@ class HelloCube(core.Plugin):
     # assemble all configurations and files
     def assemble(self):
         self.camera = core.SharedData.import_data("camera")
-        core.SharedData.set_callback("camera", self.update)
         return
 
     # setup basic settings (window, gui, logs etc)
@@ -28,6 +27,32 @@ class HelloCube(core.Plugin):
 
     # executed every frame
     def update(self):
+        if not self.camera or not self.cube:
+            return
+
+        glEnable(GL_DEPTH_TEST)
+        
+        # use shader program
+        glUseProgram(self.shader_program)
+
+        # get uniform locations
+        model_loc = glGetUniformLocation(self.shader_program, "model")
+        view_loc = glGetUniformLocation(self.shader_program, "view")
+        proj_loc = glGetUniformLocation(self.shader_program, "projection")
+
+        # model matrix
+        model = core.get_model_matrix(self.cube)
+        glUniformMatrix4fv(model_loc, 1, GL_FALSE, model.T)
+
+        # view & projection from camera
+        glUniformMatrix4fv(view_loc, 1, GL_FALSE, self.camera.view_matrix.T)
+        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, self.camera.projection_matrix.T)
+
+        # bind cube VAO and draw
+        glBindVertexArray(self.cube.vao)
+        glDrawElements(GL_TRIANGLES, len(self.cube.indices), GL_UNSIGNED_INT, None)
+        glBindVertexArray(0)
+        
         return
 
     # reset any modified parameters or files
