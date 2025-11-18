@@ -10,7 +10,6 @@ import core
 import core.window as _window
 import plugins.camera as _camera
 import projects.helloCube as HELLO
-import projects.helloCube2 as HELLO2
 
 #####################################
 # Assemble Plugins

@@ -41,7 +41,7 @@ class Mesh:
 
         glBindVertexArray(0)
 
-class Cube:
+class Cube(Mesh):
     def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=1.0):
         self.position = np.array(position, dtype=np.float32)
         self.rotation = np.array(rotation, dtype=np.float32)
@@ -81,5 +81,6 @@ class Cube:
                 1,2,6, 1,6,5,  # right
             ], dtype=np.uint32
         )
-        
-        self.upload()
+
+    def upload(self):
+        super().upload()

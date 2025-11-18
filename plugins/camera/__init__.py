@@ -66,14 +66,8 @@ class Camera(core.Plugin):
 
     # executed every frame
     def update(self):
-        # update aspect in case window resized
+        # update aspect in case window resized -> change to on dirty callback
         self.aspect = self.wnd.width / self.wnd.height
-
-        # compute projection matrix
-        self.projection_matrix = core.get_projection_matrix(self)
-
-        # compute view matrix from camera position and target
-        self.view_matrix = core.get_view_matrix(self)
 
         return
 

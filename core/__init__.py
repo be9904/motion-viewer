@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import quaternion as qt
+from .shader import Shader
 
 #####################################
 # PLUGIN

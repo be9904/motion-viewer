@@ -6,7 +6,6 @@ from .keyboard import *
 
 class Window(Plugin):
     def __init__(self):
-        # super().__init__()
         self.window = None
         self.width = WIDTH
         self.height = HEIGHT
@@ -15,13 +14,18 @@ class Window(Plugin):
         if not glfw.init():
             raise Exception(f"{self.__class__.__name__}.init(): failed in glfw.init()")
 
+        glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
+        glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 1)
+        glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
+        glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, True)  # Required on macOS
+        
         # create window
         self.window = glfw.create_window(WIDTH, HEIGHT, TITLE, None, None)
 
         if not self.window:
             glfw.terminate()
             raise Exception("Failed to create GLFW window")
-
+        
         # make the OpenGL context current
         glfw.make_context_current(self.window)
 
