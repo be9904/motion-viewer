@@ -7,6 +7,7 @@ class Mesh:
         # vertices & indices
         self.vertices = np.zeros((0, 3), dtype=np.float32)
         self.indices = np.zeros((0,), dtype=np.uint32)
+        self.normals = np.zeros((0, 3), dtype=np.float32)
         
         # buffers
         self.vao = None
@@ -28,6 +29,15 @@ class Mesh:
         self.vbo = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
         glBufferData(GL_ARRAY_BUFFER, self.vertices.nbytes, self.vertices, GL_STATIC_DRAW)
+        glEnableVertexAttribArray(0)
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, None)
+        
+        # normal VBO
+        self.nbo = glGenBuffers(1)
+        glBindBuffer(GL_ARRAY_BUFFER, self.nbo)
+        glBufferData(GL_ARRAY_BUFFER, self.normals.nbytes, self.normals, GL_STATIC_DRAW)
+        glEnableVertexAttribArray(1)
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, None)
 
         # index buffer
         self.ebo = glGenBuffers(1)
@@ -73,14 +83,26 @@ class Cube(Mesh):
         # triangle index buffer (two triangles per face)
         self.indices = np.array(
             [
-                0,1,2, 0,2,3,  # back
+                0,2,1, 0,3,2,  # back
                 4,5,6, 4,6,7,  # front
                 0,1,5, 0,5,4,  # bottom
                 2,3,7, 2,7,6,  # top
-                0,3,7, 0,7,4,  # left
+                0,7,3, 0,4,7,  # left
                 1,2,6, 1,6,5,  # right
             ], dtype=np.uint32
         )
+        
+        # normals per vertex
+        self.normals = np.array([
+            [-1,-1,-1],
+            [1,-1,-1],
+            [1,1,-1],
+            [-1,1,-1],
+            [-1,-1,1],
+            [1,-1,1],
+            [1,1,1],
+            [-1,1,1],
+        ], dtype=np.float32)
 
     def upload(self):
         super().upload()

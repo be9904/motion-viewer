@@ -12,8 +12,10 @@ class HelloCube(core.Plugin):
         self.view_matrix = None
         self.projection_matrix = None
         
-        # enable depth and lighting once
+        # enable depth test and culling
         glEnable(GL_DEPTH_TEST)
+        glEnable(GL_CULL_FACE)
+        glCullFace(GL_BACK)
         
     
     # assemble all configurations and files
@@ -47,9 +49,9 @@ class HelloCube(core.Plugin):
         self.projection_matrix = core.get_projection_matrix(self.camera)
 
         # set uniforms using your helper
-        self.shader.set_uniform_matrix4fv("model", self.model_matrix.T)
-        self.shader.set_uniform_matrix4fv("view", self.view_matrix.T)
-        self.shader.set_uniform_matrix4fv("projection", self.projection_matrix.T)
+        self.shader.set_uniform_matrix4fv("model", self.model_matrix)
+        self.shader.set_uniform_matrix4fv("view", self.view_matrix)
+        self.shader.set_uniform_matrix4fv("projection", self.projection_matrix)
         
         # set lighting
         self.shader.set_uniform_vec3("lightPos", (5.0, 5.0, 5.0))
