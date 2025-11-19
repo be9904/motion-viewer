@@ -16,7 +16,6 @@ class HelloCube(core.Plugin):
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_CULL_FACE)
         glCullFace(GL_BACK)
-        
     
     # assemble all configurations and files
     def assemble(self):
@@ -54,9 +53,9 @@ class HelloCube(core.Plugin):
         self.shader.set_uniform_matrix4fv("projection", self.projection_matrix)
         
         # set lighting
-        self.shader.set_uniform_vec3("lightPos", (5.0, 5.0, 5.0))
-        self.shader.set_uniform_vec3("lightColor", (1.0, 1.0, 1.0))
-        self.shader.set_uniform_vec3("objectColor", (1.0, 0.5, 0.31))
+        self.shader.set_uniform_vec4("lightPos", (5.0, 5.0, 5.0, 0.0))
+        self.shader.set_uniform_vec4("lightColor", (1.0, 1.0, 1.0, 1.0))
+        self.shader.set_uniform_vec4("objectColor", (1.0, 0.5, 0.31, 1.0))
         
         # bind cube VAO and draw
         glBindVertexArray(self.cube.vao)

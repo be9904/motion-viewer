@@ -52,7 +52,7 @@ class Shader:
         if loc != -1:
             glUniformMatrix4fv(loc, 1, GL_TRUE, mat)
 
-    def set_uniform_vec3(self, name, vec):
+    def set_uniform_vec4(self, name, vec):
         loc = glGetUniformLocation(self.program, name)
         if loc != -1:
-            glUniform3fv(loc, 1, vec)
+            glUniform4fv(loc, 1, vec)

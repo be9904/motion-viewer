@@ -112,33 +112,53 @@ class Camera(core.Plugin):
     # zoom camera toward target
     def zoom(self, amount):
         forward = core.normalize(self.target - self.position)
-        self.position += forward * amount
+        distance = np.linalg.norm(self.target - self.position)
+
+        # zoom speed scaled by distance
+        speed = self.zoom_sensitivity * np.log1p(distance)
+
+        # compute proposed new distance
+        new_distance = distance - amount * speed
+        min_distance = 0.5
+        max_distance = 100.0
+        new_distance = np.clip(new_distance, min_distance, max_distance)
+
+        # apply delta along forward
+        self.position = self.target - forward * new_distance
 
     # pan camera perpendicular to view direction
     def pan(self, dx=0, dy=0):
+        # get camera axes
         forward = core.normalize(self.target - self.position)
-        right = core.normalize(np.cross(self.up, forward))
-        up = core.normalize(np.cross(forward, right))
-        self.position += right * dx + up * dy
-        self.target += right * dx + up * dy
+        right = core.normalize(np.cross(forward, self.up))
+        up = core.normalize(np.cross(right, forward))
+
+        # move along axes
+        self.position += -right * dx * self.pan_sensitivity + up * dy * self.pan_sensitivity
+        self.target   += -right * dx * self.pan_sensitivity + up * dy * self.pan_sensitivity
 
     # orbit camera around the target point
-    def orbit(self, yaw=0, pitch=0):
-        yaw_rad = np.radians(yaw)
-        pitch_rad = np.radians(pitch)
+    def orbit(self, dx=0.0, dy=0.0):
+        # sensitivity factor
+        yaw_rad = np.radians(-dx * self.orbit_sensitivity)
+        pitch_rad = np.radians(-dy * self.orbit_sensitivity)
 
-        direction = self.position - self.target
-        r = np.linalg.norm(direction)
-        theta = np.arctan2(direction[2], direction[0]) + yaw_rad
-        phi = np.arccos(direction[1] / r) + pitch_rad
+        # vector from target to camera
+        offset = self.position - self.target
+        r = np.linalg.norm(offset)
 
-        # clamp phi to avoid flipping over poles
-        phi = np.clip(phi, 0.01, np.pi - 0.01)
+        # convert to spherical coords
+        theta = np.arctan2(offset[2], offset[0])  # azimuth
+        phi = np.arccos(np.clip(offset[1] / r, -1.0, 1.0))  # polar angle
 
-        # convert spherical coordinates back to Cartesian
-        self.position[0] = r * np.sin(phi) * np.cos(theta) + self.target[0]
-        self.position[1] = r * np.cos(phi) + self.target[1]
-        self.position[2] = r * np.sin(phi) * np.sin(theta) + self.target[2]
+        # update angles
+        theta += yaw_rad
+        phi = np.clip(phi + pitch_rad, 0.01, np.pi - 0.01)  # avoid poles
+
+        # convert back to Cartesian
+        self.position[0] = self.target[0] + r * np.sin(phi) * np.cos(theta)
+        self.position[1] = self.target[1] + r * np.cos(phi)
+        self.position[2] = self.target[2] + r * np.sin(phi) * np.sin(theta)
         
     ##############################################
     # Input Handlers
@@ -191,7 +211,7 @@ class Camera(core.Plugin):
         dy = ypos - self.last_mouse[1]
 
         if self.left_dragging:
-            self.orbit(yaw=dx * self.orbit_sensitivity, pitch=-dy * self.orbit_sensitivity)
+            self.orbit(dx=dx * self.orbit_sensitivity, dy=-dy * self.orbit_sensitivity)
         elif self.right_dragging:
             self.pan(dx * self.pan_sensitivity, dy * self.pan_sensitivity)
 

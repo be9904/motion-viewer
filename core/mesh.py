@@ -51,11 +51,61 @@ class Mesh:
 
         glBindVertexArray(0)
 
-class Cube(Mesh):
-    def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=1.0):
+class Sphere(Mesh):
+    def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=(1.0,1.0,1.0), lat=16, lon=16):
         self.position = np.array(position, dtype=np.float32)
         self.rotation = np.array(rotation, dtype=np.float32)
-        self.scale = np.float32(scale)
+        self.scale = np.array(scale, dtype=np.float32)
+
+        self.quaternion = qt.from_euler_angles(
+            np.radians(self.rotation[0]),
+            np.radians(self.rotation[1]),
+            np.radians(self.rotation[2]),
+        )
+
+        vertices = []
+        normals = []
+        indices = []
+        
+        # vertex & normals
+        for i in range(lat + 1):
+            theta = i * np.pi / lat
+            sin_theta = np.sin(theta)
+            cos_theta = np.cos(theta)
+            
+            for j in range(lon + 1):
+                phi = j * 2 * np.pi / lon
+                sin_phi = np.sin(phi)
+                cos_phi = np.cos(phi)
+
+                x = cos_phi * sin_theta
+                y = cos_theta
+                z = sin_phi * sin_theta
+
+                vertices.append([x, y, z])
+                normals.append([x, y, z])
+                
+        # indices
+        for i in range(lat):
+            for j in range(lon):
+                first = i * (lon + 1) + j
+                second = first + lon + 1
+
+                indices.extend([first, second, first + 1])
+                indices.extend([second, second + 1, first + 1])
+                
+        self.vertices = np.array(vertices, dtype=np.float32) * self.scale
+        self.normals = np.array(normals, dtype=np.float32)
+        self.indices = np.array(indices, dtype=np.uint32)
+
+    def upload(self):
+        super().upload()
+        
+class Cube(Mesh):
+    def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=(1.0,1.0,1.0)):
+        self.position = np.array(position, dtype=np.float32)
+        self.rotation = np.array(rotation, dtype=np.float32)
+        self.scale = np.array(scale, dtype=np.float32)
 
         self.quaternion = qt.from_euler_angles(
             np.radians(self.rotation[0]),
