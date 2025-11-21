@@ -52,7 +52,7 @@ class Mesh:
         glBindVertexArray(0)
 
 class Sphere(Mesh):
-    def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=(1.0,1.0,1.0), lat=16, lon=16):
+    def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=(1.0,1.0,1.0), lat=64, lon=64):
         self.position = np.array(position, dtype=np.float32)
         self.rotation = np.array(rotation, dtype=np.float32)
         self.scale = np.array(scale, dtype=np.float32)
@@ -142,7 +142,9 @@ class Cube(Mesh):
             ], dtype=np.uint32
         )
         
-        # normals per vertex
+        # normals per vertex (face normals, not normalized - will be normalized in shader if needed)
+        # Each vertex belongs to 3 faces, so we use the average normal
+        # For simplicity, using face normals: each vertex gets the normal of its primary face
         self.normals = np.array([
             [-1,-1,-1],
             [1,-1,-1],
@@ -153,6 +155,42 @@ class Cube(Mesh):
             [1,1,1],
             [-1,1,1],
         ], dtype=np.float32)
+        
+        # Actually, let's compute proper per-vertex normals by averaging face normals
+        # Each vertex is shared by 3 faces
+        face_normals = {
+            # back face (z = -1)
+            (0,2,1): [0, 0, -1], (0,3,2): [0, 0, -1],
+            # front face (z = 1)  
+            (4,5,6): [0, 0, 1], (4,6,7): [0, 0, 1],
+            # bottom face (y = -1)
+            (0,1,5): [0, -1, 0], (0,5,4): [0, -1, 0],
+            # top face (y = 1)
+            (2,3,7): [0, 1, 0], (2,7,6): [0, 1, 0],
+            # left face (x = -1)
+            (0,7,3): [-1, 0, 0], (0,4,7): [-1, 0, 0],
+            # right face (x = 1)
+            (1,2,6): [1, 0, 0], (1,6,5): [1, 0, 0],
+        }
+        
+        # Compute vertex normals by averaging face normals
+        vertex_normals = np.zeros((8, 3), dtype=np.float32)
+        vertex_face_count = np.zeros(8, dtype=np.int32)
+        
+        for (v0, v1, v2), normal in face_normals.items():
+            for v in [v0, v1, v2]:
+                vertex_normals[v] += normal
+                vertex_face_count[v] += 1
+        
+        # Normalize
+        for i in range(8):
+            if vertex_face_count[i] > 0:
+                vertex_normals[i] /= vertex_face_count[i]
+                norm = np.linalg.norm(vertex_normals[i])
+                if norm > 0:
+                    vertex_normals[i] /= norm
+        
+        self.normals = vertex_normals.astype(np.float32)
 
     def upload(self):
         super().upload()

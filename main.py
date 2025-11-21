@@ -4,6 +4,8 @@
 
 # library imports
 import glfw
+from OpenGL.GL import *
+from OpenGL.GLU import *
 
 # local imports
 import core
@@ -41,8 +43,24 @@ def call_plugins(queue, method_name):
     for plugin in queue:
         getattr(plugin, method_name)()
 
-if __name__ == "__main__":    
+def gl_init():
     wnd.init()
+
+    # enable depth test
+    glLineWidth(1.0)
+    glClearColor(*_window.BG_COLOR)
+    glEnable(GL_DEPTH_TEST)
+
+    # enable depth test and culling
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_CULL_FACE)
+    glCullFace(GL_BACK)
+
+def gl_terminate():
+    wnd.release()
+
+if __name__ == "__main__":    
+    gl_init()
 
     # Plugin.assemble()
     call_plugins(plugin_queue, "assemble")
@@ -63,5 +81,5 @@ if __name__ == "__main__":
 
     # Plugin.release() on reload
     call_plugins(plugin_queue, "release")
-    
-    wnd.release()
+
+    gl_terminate()

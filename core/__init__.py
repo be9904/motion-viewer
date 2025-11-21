@@ -55,6 +55,13 @@ class SharedData:
 # TRANSFORMATION
 #####################################
 
+def set_translate(v):
+    T = np.identity(4, dtype=np.float32)
+    T[0,3] = v[0]
+    T[1,3] = v[1]
+    T[2,3] = v[2]
+    return T
+
 def get_model_matrix(position, rotation, scale): # rotation is in quaternions
     T = np.eye(4, dtype=np.float32)
     T[:3, 3] = position
@@ -72,10 +79,10 @@ def get_model_matrix(position, rotation, scale): # rotation is in quaternions
 
 def get_view_matrix(camera):
     eye = np.array(camera.position, dtype=np.float32)
-    target = np.array(camera.target, dtype=np.float32)
+    at = np.array(camera.target, dtype=np.float32)
     up = np.array(camera.up, dtype=np.float32)
 
-    f = normalize(target - eye)
+    f = normalize(at - eye)
     s = normalize(np.cross(f, up))
     u = np.cross(s, f)
 
