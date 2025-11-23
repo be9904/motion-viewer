@@ -26,26 +26,33 @@ class Shader:
         return shader
 
     def compile_and_link(self):
+        # try creating a program
+        self.program = glCreateProgram()
+
+        # create shaders
         vert = self.compile_shader(self.vertex_src, GL_VERTEX_SHADER)
         frag = self.compile_shader(self.fragment_src, GL_FRAGMENT_SHADER)
 
-        self.program = glCreateProgram()
+        # attach shaders to program
         glAttachShader(self.program, vert)
         glAttachShader(self.program, frag)
+
+        # try linking program
         glLinkProgram(self.program)
 
-        # check linking
+        # check linking (validation)
         result = glGetProgramiv(self.program, GL_LINK_STATUS)
         if not result:
             error = glGetProgramInfoLog(self.program).decode()
+            glDeleteProgram(self.program) # safe delete program
             raise RuntimeError(f"Program linking failed:\n{error}")
 
         # shaders can be deleted after linking
         glDeleteShader(vert)
         glDeleteShader(frag)
 
-    def use(self):
-        glUseProgram(self.program)
+        # use program
+        glUseProgram(self.program)        
 
     def set_uniform_matrix4fv(self, name, mat):
         loc = glGetUniformLocation(self.program, name)

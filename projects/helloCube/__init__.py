@@ -41,9 +41,6 @@ class HelloCube(core.Plugin):
     def update(self):
         if not self.camera or not self.cube:
             return
-
-        # use shader program
-        self.shader.use()
         
         # update matrices
         self.model_matrix = core.get_model_matrix(self.cube.position,

@@ -43,15 +43,15 @@ def call_plugins(queue, method_name):
     for plugin in queue:
         getattr(plugin, method_name)()
 
-def gl_init():
+def gl_init(vertex_path="./shaders/cel/cel.vert", fragment_path="./shaders/cel/cel.frag"):
     wnd.init()
 
-    # enable depth test
+    # create gl program
+    shader = core.Shader(vertex_path, fragment_path)
+
+    # init gl states
     glLineWidth(1.0)
     glClearColor(*_window.BG_COLOR)
-    glEnable(GL_DEPTH_TEST)
-
-    # enable depth test and culling
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_CULL_FACE)
     glCullFace(GL_BACK)
@@ -61,6 +61,8 @@ def gl_terminate():
 
 if __name__ == "__main__":    
     gl_init()
+
+    # register event callbacks
 
     # Plugin.assemble()
     call_plugins(plugin_queue, "assemble")
