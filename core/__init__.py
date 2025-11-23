@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
+from OpenGL.GL import glViewport
+import glfw
 import numpy as np
 import quaternion as qt
+
 from .shader import Shader
 
 #####################################
@@ -115,6 +118,43 @@ def get_mvp_matrix(position, rotation, scale, camera):
     V = get_view_matrix(camera)
     P = get_projection_matrix(camera)
     return P @ V @ M
+
+#####################################
+# USER CALLBACK FUNCTIONS
+#####################################
+
+def resize(window, width=1920, height=1080): # resize glfw window
+    glViewport(0, 0, width, height)
+
+def keyboard(window, key, scancode, action, mods): # keyboard callbacks
+    if action == glfw.PRESS:
+        print('key press')
+    if action == glfw.RELEASE:
+        print('key released')
+    return
+
+def mouse(window, button, action, mods): # mouse interactions
+    if button == glfw.MOUSE_BUTTON_LEFT:
+        if action == glfw.PRESS:
+            print("Enable LMB Functionality")
+        if action == glfw.RELEASE:
+            print("Disable LMB Functionality")
+
+    if button == glfw.MOUSE_BUTTON_RIGHT:
+        if action == glfw.PRESS:
+            print("Enable RMB Functionality")
+        if action == glfw.RELEASE:
+            print("Disable RMB Functionality")
+
+    if button == glfw.MOUSE_BUTTON_MIDDLE:
+        if action == glfw.PRESS:
+            print("Enable MMB Functionality")
+        if action == glfw.RELEASE:
+            print("Disable MMB Functionality")
+    return
+
+def cursor(window, x, y): # cursor position
+    return
 
 #####################################
 # UTILITY FUNCTIONS

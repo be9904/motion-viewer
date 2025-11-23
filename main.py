@@ -43,11 +43,9 @@ def call_plugins(queue, method_name):
     for plugin in queue:
         getattr(plugin, method_name)()
 
-def gl_init(vertex_path="./shaders/cel/cel.vert", fragment_path="./shaders/cel/cel.frag"):
+def mv_init():
+    # initialize glfw window
     wnd.init()
-
-    # create gl program
-    shader = core.Shader(vertex_path, fragment_path)
 
     # init gl states
     glLineWidth(1.0)
@@ -56,11 +54,17 @@ def gl_init(vertex_path="./shaders/cel/cel.vert", fragment_path="./shaders/cel/c
     glEnable(GL_CULL_FACE)
     glCullFace(GL_BACK)
 
-def gl_terminate():
+    # set callbacks
+    glfw.set_window_size_callback(wnd.window, core.resize)
+    glfw.set_key_callback(wnd.window, core.keyboard)
+    glfw.set_mouse_button_callback(wnd.window, core.mouse)
+    glfw.set_cursor_pos_callback(wnd.window, core.cursor)
+
+def mv_terminate():
     wnd.release()
 
 if __name__ == "__main__":    
-    gl_init()
+    mv_init()
 
     # register event callbacks
 
@@ -84,4 +88,4 @@ if __name__ == "__main__":
     # Plugin.release() on reload
     call_plugins(plugin_queue, "release")
 
-    gl_terminate()
+    mv_terminate()
