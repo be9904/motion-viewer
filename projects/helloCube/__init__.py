@@ -28,7 +28,7 @@ class HelloCube(core.Plugin):
 
     # setup basic settings (window, gui, logs etc)
     def init(self):
-        self.cube.upload()
+        self.cube.update_buffers()
         self.model_matrix = core.get_model_matrix(self.cube.position, self.cube.quaternion, self.cube.scale)
         self._init_axes()
         

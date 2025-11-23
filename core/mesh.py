@@ -10,18 +10,20 @@ class Mesh:
         self.normals = np.zeros((0, 3), dtype=np.float32)
         
         # buffers
-        self.vao = None
-        self.vbo = None
-        self.ebo = None
+        self.vao = None # vertex array
+        self.vbo = None # vertex buffer
+        self.ibo = None # index buffer
+
+        print("WARNING: This class should not be instantiated. Use a child class or define a child class of this class.")
     
-    def upload(self):
+    def update_buffers(self):
         # safety check
         if not isinstance(self.vertices, np.ndarray):
             raise TypeError("vertices must be a numpy array")
         if not isinstance(self.indices, np.ndarray):
             raise TypeError("indices must be a numpy array")
     
-        # build VAO + VBOs
+        # build VAO (bind later)
         self.vao = glGenVertexArrays(1)
         glBindVertexArray(self.vao)
 
@@ -29,26 +31,23 @@ class Mesh:
         self.vbo = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
         glBufferData(GL_ARRAY_BUFFER, self.vertices.nbytes, self.vertices, GL_STATIC_DRAW)
-        glEnableVertexAttribArray(0)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, None)
+        glEnableVertexAttribArray(0) # location 0 in shader
+        # for floats, always use GL_FALSE
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, None) # bind position to location 0
         
         # normal VBO
         self.nbo = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, self.nbo)
         glBufferData(GL_ARRAY_BUFFER, self.normals.nbytes, self.normals, GL_STATIC_DRAW)
-        glEnableVertexAttribArray(1)
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, None)
+        glEnableVertexAttribArray(1) # location 1 in shader
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, None) # bind normals to location 1
 
         # index buffer
-        self.ebo = glGenBuffers(1)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo)
+        self.ibo = glGenBuffers(1)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, self.indices.nbytes, self.indices, GL_STATIC_DRAW)
 
-        # layout: location=0 → vertex position
-        glEnableVertexAttribArray(0)
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, None)
-        # glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * 4, None)
-
+        # unbind vao at end
         glBindVertexArray(0)
 
 class Sphere(Mesh):
@@ -98,8 +97,10 @@ class Sphere(Mesh):
         self.normals = np.array(normals, dtype=np.float32)
         self.indices = np.array(indices, dtype=np.uint32)
 
-    def upload(self):
-        super().upload()
+
+
+    def update_buffers(self):
+        super().update_buffers()
         
 class Cube(Mesh):
     def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=(1.0,1.0,1.0)):
@@ -192,5 +193,5 @@ class Cube(Mesh):
         
         self.normals = vertex_normals.astype(np.float32)
 
-    def upload(self):
-        super().upload()
+    def update_buffers(self):
+        super().update_buffers()
