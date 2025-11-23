@@ -15,7 +15,7 @@ class Mesh:
         self.ibo = None # index buffer
 
         print("WARNING: This class should not be instantiated. Use a child class or define a child class of this class.")
-    
+
     def update_buffers(self):
         # safety check
         if not isinstance(self.vertices, np.ndarray):
@@ -62,18 +62,28 @@ class Sphere(Mesh):
             np.radians(self.rotation[2]),
         )
 
+        # tesselation
+        self.lat = lat
+        self.lon = lon
+
+        # buffers
+        self.vertices = None
+        self.normals = None
+        self.indices = None
+
+    def create_buffers(self):
         vertices = []
         normals = []
         indices = []
         
         # vertex & normals
-        for i in range(lat + 1):
-            theta = i * np.pi / lat
+        for i in range(self.lat + 1):
+            theta = i * np.pi / self.lat
             sin_theta = np.sin(theta)
             cos_theta = np.cos(theta)
             
-            for j in range(lon + 1):
-                phi = j * 2 * np.pi / lon
+            for j in range(self.lon + 1):
+                phi = j * 2 * np.pi / self.lon
                 sin_phi = np.sin(phi)
                 cos_phi = np.cos(phi)
 
@@ -85,10 +95,10 @@ class Sphere(Mesh):
                 normals.append([x, y, z])
                 
         # indices
-        for i in range(lat):
-            for j in range(lon):
-                first = i * (lon + 1) + j
-                second = first + lon + 1
+        for i in range(self.lat):
+            for j in range(self.lon):
+                first = i * (self.lon + 1) + j
+                second = first + self.lon + 1
 
                 indices.extend([first, second, first + 1])
                 indices.extend([second, second + 1, first + 1])
@@ -96,11 +106,19 @@ class Sphere(Mesh):
         self.vertices = np.array(vertices, dtype=np.float32) * self.scale
         self.normals = np.array(normals, dtype=np.float32)
         self.indices = np.array(indices, dtype=np.uint32)
-
-
-
+        return
+    
     def update_buffers(self):
         super().update_buffers()
+
+    def update_tesselation(self, lat, lon):
+        self.lat = lat
+        self.lon = lon
+
+        self.create_buffers()
+        self.update_buffers()
+
+        return
         
 class Cube(Mesh):
     def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=(1.0,1.0,1.0)):
@@ -114,84 +132,44 @@ class Cube(Mesh):
             np.radians(self.rotation[2]),
         )
 
-        # 8 cube vertices in model space (scaled)
-        self.vertices = (
-            np.array(
-                [
-                    [-1, -1, -1],
-                    [1, -1, -1],
-                    [1, 1, -1],
-                    [-1, 1, -1],
-                    [-1, -1, 1],
-                    [1, -1, 1],
-                    [1, 1, 1],
-                    [-1, 1, 1],
-                ],
-                dtype=np.float32,
-            ) * self.scale / 2.0
-        )
+        self.vertices = None
+        self.normals = None
+        self.indices = None        
 
-        # triangle index buffer (two triangles per face)
-        self.indices = np.array(
-            [
-                0,2,1, 0,3,2,  # back
-                4,5,6, 4,6,7,  # front
-                0,1,5, 0,5,4,  # bottom
-                2,3,7, 2,7,6,  # top
-                0,7,3, 0,4,7,  # left
-                1,2,6, 1,6,5,  # right
-            ], dtype=np.uint32
-        )
-        
-        # normals per vertex (face normals, not normalized - will be normalized in shader if needed)
-        # Each vertex belongs to 3 faces, so we use the average normal
-        # For simplicity, using face normals: each vertex gets the normal of its primary face
-        self.normals = np.array([
-            [-1,-1,-1],
-            [1,-1,-1],
-            [1,1,-1],
-            [-1,1,-1],
-            [-1,-1,1],
-            [1,-1,1],
-            [1,1,1],
-            [-1,1,1],
+    def create_buffers(self):
+        vertices = np.array([
+            [-1, -1,  1], [ 1, -1,  1], [ 1,  1,  1], [-1,  1,  1], # Front face (+Z)
+            [ 1, -1, -1], [-1, -1, -1], [-1,  1, -1], [ 1,  1, -1], # Back face (-Z)
+            [-1, -1, -1], [-1, -1,  1], [-1,  1,  1], [-1,  1, -1], # Left face (-X)
+            [ 1, -1,  1], [ 1, -1, -1], [ 1,  1, -1], [ 1,  1,  1], # Right face (+X)
+            [-1,  1,  1], [ 1,  1,  1], [ 1,  1, -1], [-1,  1, -1], # Top face (+Y)
+            [-1, -1, -1], [ 1, -1, -1], [ 1, -1,  1], [-1, -1,  1], # Bottom face (-Y)
         ], dtype=np.float32)
-        
-        # Actually, let's compute proper per-vertex normals by averaging face normals
-        # Each vertex is shared by 3 faces
-        face_normals = {
-            # back face (z = -1)
-            (0,2,1): [0, 0, -1], (0,3,2): [0, 0, -1],
-            # front face (z = 1)  
-            (4,5,6): [0, 0, 1], (4,6,7): [0, 0, 1],
-            # bottom face (y = -1)
-            (0,1,5): [0, -1, 0], (0,5,4): [0, -1, 0],
-            # top face (y = 1)
-            (2,3,7): [0, 1, 0], (2,7,6): [0, 1, 0],
-            # left face (x = -1)
-            (0,7,3): [-1, 0, 0], (0,4,7): [-1, 0, 0],
-            # right face (x = 1)
-            (1,2,6): [1, 0, 0], (1,6,5): [1, 0, 0],
-        }
-        
-        # Compute vertex normals by averaging face normals
-        vertex_normals = np.zeros((8, 3), dtype=np.float32)
-        vertex_face_count = np.zeros(8, dtype=np.int32)
-        
-        for (v0, v1, v2), normal in face_normals.items():
-            for v in [v0, v1, v2]:
-                vertex_normals[v] += normal
-                vertex_face_count[v] += 1
-        
-        # Normalize
-        for i in range(8):
-            if vertex_face_count[i] > 0:
-                vertex_normals[i] /= vertex_face_count[i]
-                norm = np.linalg.norm(vertex_normals[i])
-                if norm > 0:
-                    vertex_normals[i] /= norm
-        
-        self.normals = vertex_normals.astype(np.float32)
+
+        # Normals: 1 per vertex, pointing out of the face
+        normals = np.array([
+            [0, 0,  1], [0, 0,  1], [0, 0,  1], [0, 0,  1], # Front
+            [0, 0, -1], [0, 0, -1], [0, 0, -1], [0, 0, -1], # Back
+            [-1, 0, 0], [-1, 0, 0], [-1, 0, 0], [-1, 0, 0], # Left
+            [ 1, 0, 0], [ 1, 0, 0], [ 1, 0, 0], [ 1, 0, 0], # Right
+            [0,  1, 0], [0,  1, 0], [0,  1, 0], [0,  1, 0], # Top
+            [0, -1, 0], [0, -1, 0], [0, -1, 0], [0, -1, 0], # Bottom
+        ], dtype=np.float32)
+
+        # Indices (two triangles per face)
+        indices = np.array([
+            0,1,2, 0,2,3,       # Front
+            4,5,6, 4,6,7,       # Back
+            8,9,10, 8,10,11,    # Left
+            12,13,14, 12,14,15, # Right
+            16,17,18, 16,18,19, # Top
+            20,21,22, 20,22,23, # Bottom
+        ], dtype=np.uint32)
+
+        self.vertices = vertices
+        self.normals = normals
+        self.indices = indices
+        return
 
     def update_buffers(self):
         super().update_buffers()

@@ -7,7 +7,7 @@ from core.mesh import *
 
 class HelloCube(core.Plugin):
     def __init__(self):
-        self.cube = Cube(position=(0,0,2),rotation=(0,0,0),scale=(1,1,1))
+        self.cube = Cube(position=(0,1,0),rotation=(0,0,0),scale=(1,1,1))
         self.camera = None
         self.shader = core.Shader("shaders/cel/cel.vert", "shaders/cel/cel.frag")
         self.axis_vao = None
@@ -28,10 +28,17 @@ class HelloCube(core.Plugin):
 
     # setup basic settings (window, gui, logs etc)
     def init(self):
+        # init buffers
+        self.cube.create_buffers()
         self.cube.update_buffers()
-        self.model_matrix = core.get_model_matrix(self.cube.position, self.cube.quaternion, self.cube.scale)
+
+        # draw axes
         self._init_axes()
+
+        # TODO: setup model matrix
+        self.model_matrix = core.get_model_matrix(self.cube.position, self.cube.quaternion, self.cube.scale)
         
+        # TODO: setup view & projection matrix
         if self.camera:
             self.view_matrix = core.get_view_matrix(self.camera)
             self.projection_matrix = core.get_projection_matrix(self.camera)
