@@ -14,6 +14,9 @@ class Mesh:
         self.vbo = None # vertex buffer
         self.ibo = None # index buffer
 
+        # model matrix
+        self.model_matrix = None
+
         print("WARNING: This class should not be instantiated. Use a child class or define a child class of this class.")
 
     def update_buffers(self):
@@ -71,6 +74,10 @@ class Sphere(Mesh):
         self.normals = None
         self.indices = None
 
+        # init buffers
+        self.create_buffers()
+        self.update_buffers()
+
     def create_buffers(self):
         vertices = []
         normals = []
@@ -119,6 +126,18 @@ class Sphere(Mesh):
         self.update_buffers()
 
         return
+
+    def update(self, location):
+        # bind vao
+        if self.vao is not None:
+            glBindVertexArray(self.vao)
+
+        # update model matrix
+        glUniformMatrix4fv(location, 1, GL_FALSE, self.model_matrix)
+
+        # draw every frame
+        glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
+        return
         
 class Cube(Mesh):
     def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=(1.0,1.0,1.0)):
@@ -132,9 +151,16 @@ class Cube(Mesh):
             np.radians(self.rotation[2]),
         )
 
+        # buffers
         self.vertices = None
         self.normals = None
-        self.indices = None        
+        self.indices = None     
+
+        # init buffers
+        self.create_buffers()
+        self.update_buffers()   
+
+        # TODO: build model matrix, locate uniform variable "model" and update uniform variable every frame
 
     def create_buffers(self):
         vertices = np.array([
@@ -173,3 +199,6 @@ class Cube(Mesh):
 
     def update_buffers(self):
         super().update_buffers()
+
+    def update(self):
+        return

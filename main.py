@@ -30,10 +30,11 @@ wnd = _window.Window()
 cam = _camera.Camera(window=wnd)
 plugin_queue.append(cam)
 
-# add button for file selection
-
 # add projects
 plugin_queue.append(HELLO.HelloCube())
+
+# declare shader
+shader = core.Shader("shaders/cel/cel.vert", "shaders/cel/cel.frag")
 
 #####################################
 # Main Loop
@@ -60,13 +61,14 @@ def mv_init():
     glfw.set_mouse_button_callback(wnd.window, core.mouse)
     glfw.set_cursor_pos_callback(wnd.window, core.cursor)
 
+    # export shader data
+    core.SharedData.export_data("shader", shader)
+
 def mv_terminate():
     wnd.release()
 
 if __name__ == "__main__":    
     mv_init()
-
-    # register event callbacks
 
     # Plugin.assemble()
     call_plugins(plugin_queue, "assemble")

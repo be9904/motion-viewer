@@ -28,10 +28,6 @@ class HelloCube(core.Plugin):
 
     # setup basic settings (window, gui, logs etc)
     def init(self):
-        # init buffers
-        self.cube.create_buffers()
-        self.cube.update_buffers()
-
         # draw axes
         self._init_axes()
 
