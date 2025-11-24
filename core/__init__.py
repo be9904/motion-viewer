@@ -63,65 +63,53 @@ class SharedData:
 #####################################
 
 def set_translate(v):
-    T = np.identity(4, dtype=np.float32)
+    T = np.zeros((4, 4), dtype=np.float32)
     T[0,3] = v[0]
     T[1,3] = v[1]
     T[2,3] = v[2]
     return T
 
-def get_model_matrix(position, rotation, scale): # rotation is in quaternions
-    T = np.eye(4, dtype=np.float32)
-    T[:3, 3] = position
+def set_scale(v):
+    S = np.zeros((4, 4), dtype=np.float32)
+    S[0,0] = v[0]
+    S[1,1] = v[1]
+    S[2,2] = v[2]
+    return S
 
-    R3 = qt.as_rotation_matrix(rotation)
-    R = np.eye(4, dtype=np.float32)
-    R[:3, :3] = R3
-
-    S = np.eye(4, dtype=np.float32)
-    S[0,0] = scale[0]
-    S[1,1] = scale[1]
-    S[2,2] = scale[2]
-
-    return T @ R @ S
-
-def get_view_matrix(camera):
-    eye = np.array(camera.position, dtype=np.float32)
-    at = np.array(camera.target, dtype=np.float32)
-    up = np.array(camera.up, dtype=np.float32)
-
-    f = normalize(at - eye)
-    s = normalize(np.cross(f, up))
-    u = np.cross(s, f)
-
-    M = np.eye(4, dtype=np.float32)
-    M[0, :3] = s
-    M[1, :3] = u
-    M[2, :3] = -f
-    M[:3, 3] = -np.array([eye @ s, eye @ u, eye @ -f])
-
-    return M
-
-def get_projection_matrix(camera):
-    fovy = camera.fovy
-    aspect = camera.aspect
-    near = camera.near
-    far = camera.far
-
-    f = 1.0 / np.tan(fovy / 2)
-    P = np.zeros((4,4), dtype=np.float32)
-    P[0,0] = f / aspect
-    P[1,1] = f
-    P[2,2] = (far + near) / (near - far)
-    P[2,3] = (2 * far * near) / (near - far)
-    P[3,2] = -1
+def set_rotation(q):
+    # convert to axis and angle
+    q_x, q_y, q_z, q_w = q
+    angle = 2 * np.arccos(q_w)
+    q_s = np.sqrt(1 - q_w * q_w)
+    if q_s < 1e-6:
+        axis = np.array([1, 0, 0], dtype=np.float32)
+    else:
+        axis = np.array([q_x, q_y, q_z], dtype=np.float32) / q_s
     
-    return P
+    # build rotation matrix R
+    R = np.zeros((4, 4), dtype=np.float32)
+    c = np.cos(angle); s = np.sin(angle); x = axis[0]; y = axis[1]; z = axis[2]
+    R[0,0] = x * x * (1 - c) + c;     R[0,1] = x * y * (1 - c) - z * s; R[0,2] = x * z * (1 - c) + y * s; R[0,3] = 0
+    R[1,0] = x * y * (1 - c) + z * s; R[1,1] = y * y * (1 - c) + c;     R[1,2] = y * z * (1 - c) - x * s; R[1,3] = 0
+    R[2,0] = x * z * (1 - c) - y * s; R[2,1] = y * z * (1 - c) + x * s; R[2,2] = z * z * (1 - c) + c;     R[2,3] = 0
+    R[3,0] = 0;                       R[3,1] = 0;                       R[3,2] = 0;                       R[3,3] = 1
+    
+    return R
 
-def get_mvp_matrix(position, rotation, scale, camera):
-    M = get_model_matrix(position, rotation, scale)
-    V = get_view_matrix(camera)
-    P = get_projection_matrix(camera)
-    return P @ V @ M
+# def get_model_matrix(position, rotation, scale): # rotation is in quaternions
+#     T = np.eye(4, dtype=np.float32)
+#     T[:3, 3] = position
+
+#     R3 = qt.as_rotation_matrix(rotation)
+#     R = np.eye(4, dtype=np.float32)
+#     R[:3, :3] = R3
+
+#     S = np.eye(4, dtype=np.float32)
+#     S[0,0] = scale[0]
+#     S[1,1] = scale[1]
+#     S[2,2] = scale[2]
+
+#     return T @ R @ S
 
 #####################################
 # USER CALLBACK FUNCTIONS

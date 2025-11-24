@@ -127,13 +127,15 @@ class Sphere(Mesh):
 
         return
 
-    def draw(self, location):
+    def draw(self, program):
         # bind vao
         if self.vao is not None:
             glBindVertexArray(self.vao)
+            
+        glUseProgram(program)
 
         # update model matrix
-        glUniformMatrix4fv(location, 1, GL_FALSE, self.model_matrix)
+        model_loc = glUniformMatrix4fv(location, 1, GL_FALSE, self.model_matrix)
 
         # draw every frame
         glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)

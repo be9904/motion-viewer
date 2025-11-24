@@ -28,6 +28,8 @@ class Curve:
         
         # built-in shader properties
         self.shader_program = self.create_shader()
+        glUseProgram(self.shader_program)
+        self.color_loc = glGetUniformLocation(self.shader_program, "uColor")
         
     def generate_control_points(self):
         # no control points if degree is 1 (straight line)
@@ -85,8 +87,7 @@ class Curve:
         glUseProgram(self.shader_program)
         
         # set color uniform
-        color_loc = glGetUniformLocation(self.shader_program, "uColor")
-        glUniform3fv(color_loc, 1, self.color)
+        glUniform3fv(self.color_loc, 1, self.color)
             
         # draw curve
         glDrawArrays(GL_LINE_STRIP, 0, self.vertex_count)

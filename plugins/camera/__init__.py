@@ -29,7 +29,7 @@ class Camera(core.Plugin):
         
         # export after creation
         core.SharedData.export_data("camera", self)
-            
+
     def look_at(self):
         # define forward, right and true up
         n = self.eye - self.at

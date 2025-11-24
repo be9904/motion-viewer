@@ -25,17 +25,17 @@ class HelloCube(core.Plugin):
 
     # setup basic settings (window, gui, logs etc)
     def init(self):
-        self.cube = Sphere(position=(0,1,0),rotation=(0,0,0),scale=(1,1,1))
+        # self.cube = Sphere(position=(0,1,0),rotation=(0,0,0),scale=(1,1,1))
         self.shader = core.SharedData.import_data("shader")
 
         # TODO: setup model matrix
-        self.model_matrix = core.get_model_matrix(self.cube.position, self.cube.quaternion, self.cube.scale)
+        # self.model_matrix = core.get_model_matrix(self.cube.position, self.cube.quaternion, self.cube.scale)
         
         # TODO: setup view & projection matrix
-        if self.camera:
-            self.view_matrix = core.get_view_matrix(self.camera)
-            self.projection_matrix = core.get_projection_matrix(self.camera)
-        return
+        # if self.camera:
+        #     self.view_matrix = core.get_view_matrix(self.camera)
+        #     self.projection_matrix = core.get_projection_matrix(self.camera)
+        # return
 
     # executed every frame
     def update(self):
