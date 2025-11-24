@@ -1,5 +1,6 @@
 import numpy as np
 from OpenGL.GL import *
+import core
 import quaternion as qt
 
 class Mesh:
@@ -64,6 +65,9 @@ class Sphere(Mesh):
             np.radians(self.rotation[1]),
             np.radians(self.rotation[2]),
         )
+
+        # model matrix
+        self.model = core.get_model_matrix(self.position, self.quaternion, self.scale)
 
         # tesselation
         self.lat = lat
@@ -135,7 +139,7 @@ class Sphere(Mesh):
         glUseProgram(program)
 
         # update model matrix
-        model_loc = glUniformMatrix4fv(location, 1, GL_FALSE, self.model_matrix)
+        # model_loc = glUniformMatrix4fv(location, 1, GL_FALSE, self.model_matrix)
 
         # draw every frame
         glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
@@ -152,6 +156,9 @@ class Cube(Mesh):
             np.radians(self.rotation[1]),
             np.radians(self.rotation[2]),
         )
+
+        # model matrix
+        self.model = core.get_model_matrix(self.position, self.quaternion, self.scale)
 
         # buffers
         self.vertices = None

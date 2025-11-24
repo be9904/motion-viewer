@@ -83,7 +83,7 @@ class Curve:
         if self.vao is not None:
             glBindVertexArray(self.vao)
             
-        # use shader program
+        # switch to binded shader program
         glUseProgram(self.shader_program)
         
         # set color uniform
@@ -93,6 +93,7 @@ class Curve:
         glDrawArrays(GL_LINE_STRIP, 0, self.vertex_count)
         
     def create_shader(self):
+        # built in shader for curves
         vertex_src = """
         #version 330 core
         layout (location = 0) in vec3 position;
