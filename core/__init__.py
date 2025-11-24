@@ -76,7 +76,7 @@ def set_scale(v):
     S[2,2] = v[2]
     return S
 
-def set_rotation(q):
+def set_rotate(q):
     # convert to axis and angle
     q_x, q_y, q_z, q_w = q
     angle = 2 * np.arccos(q_w)
@@ -96,20 +96,17 @@ def set_rotation(q):
     
     return R
 
-# def get_model_matrix(position, rotation, scale): # rotation is in quaternions
-#     T = np.eye(4, dtype=np.float32)
-#     T[:3, 3] = position
-
-#     R3 = qt.as_rotation_matrix(rotation)
-#     R = np.eye(4, dtype=np.float32)
-#     R[:3, :3] = R3
-
-#     S = np.eye(4, dtype=np.float32)
-#     S[0,0] = scale[0]
-#     S[1,1] = scale[1]
-#     S[2,2] = scale[2]
-
-#     return T @ R @ S
+def get_model_matrix(position, rotation, scale): # rotation is quaternion    
+    if rotation.shape[0] != 4:
+        raise ValueError("rotation must be passed as quaternions")
+    
+    T = set_translate(position)
+    R = set_rotate(rotation)
+    S = set_scale(scale)
+    
+    M = T @ R @ S
+    
+    return M # P @ V @ M @ local
 
 #####################################
 # USER CALLBACK FUNCTIONS
