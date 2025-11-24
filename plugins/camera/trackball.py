@@ -5,7 +5,6 @@ import quaternion as qt
 # local imports
 import core
 
-
 def cursor_to_ndc(cursor, window_size):
     """
     Convert window cursor position to normalized device coordinates [-1, 1]
