@@ -9,13 +9,12 @@ from core.curve import *
 class HelloCube(core.Plugin):
     def __init__(self):
         self.camera = None
-        self.cube = Sphere(position=(0,1,0),rotation=(0,0,0),scale=(1,1,1))
-        self.curve = Curve(start_pos=(0.0,0.0,0.0),end_pos=(50.0,0.0,0.0),degree=1,samples=1)
-        self.shader = core.Shader("shaders/cel/cel.vert", "shaders/cel/cel.frag")
+        self.cube = None
+        self.shader = None
         self.identity_matrix = np.eye(4, dtype=np.float32)
         
         # class member matrices
-        self.model_matrix = core.get_model_matrix(self.cube.position, self.cube.quaternion, self.cube.scale)
+        self.model_matrix = None
         self.view_matrix = None
         self.projection_matrix = None
     
@@ -26,8 +25,8 @@ class HelloCube(core.Plugin):
 
     # setup basic settings (window, gui, logs etc)
     def init(self):
-        # draw axes
-        self.curve.init_curve()
+        self.cube = Sphere(position=(0,1,0),rotation=(0,0,0),scale=(1,1,1))
+        self.shader = core.SharedData.import_data("shader")
 
         # TODO: setup model matrix
         self.model_matrix = core.get_model_matrix(self.cube.position, self.cube.quaternion, self.cube.scale)
@@ -42,6 +41,8 @@ class HelloCube(core.Plugin):
     def update(self):
         if not self.camera or not self.cube:
             return
+        
+        glUseProgram(self.shader.program)
         
         # update matrices
         self.model_matrix = core.get_model_matrix(self.cube.position,
@@ -64,9 +65,6 @@ class HelloCube(core.Plugin):
         glBindVertexArray(self.cube.vao)
         glDrawElements(GL_TRIANGLES, len(self.cube.indices), GL_UNSIGNED_INT, None)
         glBindVertexArray(0) # unbind vao
-        
-        # draw world axes
-        self.curve.draw_curve()
 
     # reset any modified parameters or files
     def reset(self):

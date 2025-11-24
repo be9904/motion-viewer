@@ -10,6 +10,7 @@ from OpenGL.GLU import *
 # local imports
 import core
 import core.window as _window
+from core.curve import *
 import plugins.camera as _camera
 import projects.helloCube as HELLO
 
@@ -20,8 +21,8 @@ import projects.helloCube as HELLO
 # plugin queue to loop at runtime
 plugin_queue = []
 
-# shared data that is passed between plugins
-shared_data = core.SharedData()
+# # shared data that is passed between plugins
+# shared_data = core.SharedData()
 
 # setup window
 wnd = _window.Window()
@@ -33,8 +34,11 @@ plugin_queue.append(cam)
 # add projects
 plugin_queue.append(HELLO.HelloCube())
 
-# declare shader
-shader = core.Shader("shaders/cel/cel.vert", "shaders/cel/cel.frag")
+#####################################
+# Global Declarations
+#####################################
+
+curve = Curve(start_pos=(0.0,0.0,0.0),end_pos=(50.0,0.0,0.0),degree=1,color=(1,1,1),samples=1)
 
 #####################################
 # Main Loop
@@ -61,13 +65,19 @@ def mv_init():
     glfw.set_mouse_button_callback(wnd.window, core.mouse)
     glfw.set_cursor_pos_callback(wnd.window, core.cursor)
 
+    # declare shader
+    shader = core.Shader("shaders/cel/cel.vert", "shaders/cel/cel.frag")
+
     # export shader data
     core.SharedData.export_data("shader", shader)
+    
+    # init axes
+    curve.init_curve()
 
 def mv_terminate():
     wnd.release()
 
-if __name__ == "__main__":    
+if __name__ == "__main__":   
     mv_init()
 
     # Plugin.assemble()
@@ -79,6 +89,7 @@ if __name__ == "__main__":
     # Plugin.update(), Plugin.post_update()
     while not glfw.window_should_close(wnd.window):
         wnd.update()
+        curve.draw_curve()
         call_plugins(plugin_queue, "update")
         
         wnd.post_update()

@@ -53,6 +53,10 @@ class SharedData:
     @classmethod
     def import_data(cls, name):
         return cls._data.get(name, None)
+    
+    @classmethod # for debugging
+    def list_data(cls):
+        print(cls._data)
 
 #####################################
 # TRANSFORMATION

@@ -2,8 +2,10 @@ from OpenGL.GL import *
 import numpy as np
 from ctypes import c_void_p
 
+import core
+
 class Curve:
-    def __init__(self, start_pos=(0.0, 0.0, 0.0), end_pos=(1.0, 0.0, 0.0), degree=1, samples=100):
+    def __init__(self, start_pos=(0.0, 0.0, 0.0), end_pos=(1.0, 0.0, 0.0), degree=1, color=(1,1,1), samples=100):
         self.start_pos = np.array(start_pos, dtype=np.float32)
         self.end_pos = np.array(end_pos, dtype=np.float32)
         self.degree = degree
@@ -11,12 +13,16 @@ class Curve:
             print("WARNING: degree must be minimum 1. Degree has been set to 1 by default.")
             self.degree = 1
         self.control_points = self.generate_control_points()
+        self.color = color
             
         # gl related variables
         self.vao = None
         self.vbo = None
         self.samples = samples
         self.vertex_count = 2
+        
+        # built-in shader properties
+        self.shader_program = self.create_shader()
         
     def generate_control_points(self):
         if self.degree <= 1:
@@ -51,7 +57,7 @@ class Curve:
             vertices.append(self.find_curve_point(t))
         return np.array(vertices, dtype=np.float32)
     
-    def init_curve(self):
+    def init_curve(self):                        
         vertices = self.sample_curve()
         self.vertex_count = len(vertices)
         
@@ -73,7 +79,56 @@ class Curve:
         if self.vao is not None:
             glBindVertexArray(self.vao)
             
+        # use shader program
+        glUseProgram(self.shader_program)
+        
+        # set color uniform
+        color_loc = glGetUniformLocation(self.shader_program, "uColor")
+        glUniform3fv(color_loc, 1, self.color)
+            
         glDrawArrays(GL_LINE_STRIP, 0, self.vertex_count)
+        
+    def create_shader(self):
+        vertex_src = """
+        #version 330 core
+        layout (location = 0) in vec3 position;
+        void main() {
+            gl_Position = vec4(position, 1.0);
+        }
+        """
+
+        fragment_src = """
+        #version 330 core
+        out vec4 FragColor;
+        uniform vec3 uColor;
+        void main() {
+            FragColor = vec4(uColor, 1.0);
+        }
+        """
+
+        # Compile shaders
+        vertex_shader = glCreateShader(GL_VERTEX_SHADER)
+        glShaderSource(vertex_shader, vertex_src)
+        glCompileShader(vertex_shader)
+        # check compile status omitted for brevity
+
+        fragment_shader = glCreateShader(GL_FRAGMENT_SHADER)
+        glShaderSource(fragment_shader, fragment_src)
+        glCompileShader(fragment_shader)
+        # check compile status omitted for brevity
+
+        # Link program
+        program = glCreateProgram()
+        glAttachShader(program, vertex_shader)
+        glAttachShader(program, fragment_shader)
+        glLinkProgram(program)
+
+        # Cleanup shaders
+        glDeleteShader(vertex_shader)
+        glDeleteShader(fragment_shader)
+        
+        return program
+
         
 class Line(Curve):
     def __init__(self, start_pos=(0,0,0), end_pos=(1,0,0), samples=1):
