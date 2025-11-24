@@ -28,6 +28,9 @@ class Window(Plugin):
         
         # make the OpenGL context current
         glfw.make_context_current(self.window)
+        
+        # export window object
+        SharedData.export_data("window", self)
 
     # assemble all configurations and files
     def assemble(self):

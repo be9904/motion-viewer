@@ -127,7 +127,7 @@ class Sphere(Mesh):
 
         return
 
-    def update(self, location):
+    def draw(self, location):
         # bind vao
         if self.vao is not None:
             glBindVertexArray(self.vao)
@@ -200,5 +200,5 @@ class Cube(Mesh):
     def update_buffers(self):
         super().update_buffers()
 
-    def update(self):
+    def draw(self):
         return

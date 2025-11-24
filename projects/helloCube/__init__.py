@@ -42,24 +42,22 @@ class HelloCube(core.Plugin):
         if not self.camera or not self.cube:
             return
         
-        glUseProgram(self.shader.program)
-        
-        # update matrices
-        self.model_matrix = core.get_model_matrix(self.cube.position,
-                                                self.cube.quaternion,
-                                                self.cube.scale)
-        self.view_matrix = core.get_view_matrix(self.camera)
-        self.projection_matrix = core.get_projection_matrix(self.camera)
+        # # update matrices
+        # self.model_matrix = core.get_model_matrix(self.cube.position,
+        #                                         self.cube.quaternion,
+        #                                         self.cube.scale)
+        # self.view_matrix = core.get_view_matrix(self.camera)
+        # self.projection_matrix = core.get_projection_matrix(self.camera)
 
-        # set uniforms using your helper
-        self.shader.set_uniform_matrix4fv("model", self.model_matrix)
-        self.shader.set_uniform_matrix4fv("view", self.view_matrix)
-        self.shader.set_uniform_matrix4fv("projection", self.projection_matrix)
+        # # set uniforms using your helper
+        # self.shader.set_uniform_matrix4fv("model", self.model_matrix)
+        # self.shader.set_uniform_matrix4fv("view", self.view_matrix)
+        # self.shader.set_uniform_matrix4fv("projection", self.projection_matrix)
         
-        # set lighting
-        self.shader.set_uniform_vec4("lightPos", (5.0, 5.0, 5.0, 0.0))
-        self.shader.set_uniform_vec4("lightColor", (1.0, 1.0, 1.0, 1.0))
-        self.shader.set_uniform_vec4("objectColor", (1.0, 0.5, 0.31, 1.0))
+        # # set lighting
+        # self.shader.set_uniform_vec4("lightPos", (5.0, 5.0, 5.0, 0.0))
+        # self.shader.set_uniform_vec4("lightColor", (1.0, 1.0, 1.0, 1.0))
+        # self.shader.set_uniform_vec4("objectColor", (1.0, 0.5, 0.31, 1.0))
         
         # bind cube VAO and draw
         glBindVertexArray(self.cube.vao)

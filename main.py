@@ -15,30 +15,26 @@ import plugins.camera as _camera
 import projects.helloCube as HELLO
 
 #####################################
-# Assemble Plugins
-#####################################
-
-# plugin queue to loop at runtime
-plugin_queue = []
-
-# # shared data that is passed between plugins
-# shared_data = core.SharedData()
-
-# setup window
-wnd = _window.Window()
-
-# setup camera
-cam = _camera.Camera(window=wnd)
-plugin_queue.append(cam)
-
-# add projects
-plugin_queue.append(HELLO.HelloCube())
-
-#####################################
 # Global Declarations
 #####################################
 
+plugin_queue = [] # plugin queue to loop at runtime
+
+wnd = _window.Window() # create window
+cam = _camera.Camera() # create camera
 curve = Curve(start_pos=(0.0,0.0,0.0),end_pos=(50.0,0.0,0.0),degree=1,color=(1,1,1),samples=1)
+
+#####################################
+# Assemble Plugins
+#####################################
+
+# add camera to the front of queue
+plugin_queue.append(cam)
+
+# add plugins
+
+# add projects
+plugin_queue.append(HELLO.HelloCube())
 
 #####################################
 # Main Loop
@@ -68,8 +64,8 @@ def mv_init():
     # declare shader
     shader = core.Shader("shaders/cel/cel.vert", "shaders/cel/cel.frag")
 
-    # export shader data
-    core.SharedData.export_data("shader", shader)
+    # exports
+    core.SharedData.export_data("shader", shader) # move to a project class
     
     # init axes
     curve.init_curve()
