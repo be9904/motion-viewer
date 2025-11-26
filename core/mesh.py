@@ -135,15 +135,16 @@ class Sphere(Mesh):
         return
 
     # inject into update loop
-    def draw(self, program):
+    def draw(self, program=None):
         # bind vao
         if self.vao is not None:
             glBindVertexArray(self.vao)
             
-        glUseProgram(program)
+        if program is None:
+            raise ValueError("Program is not specified.")
 
-        # update model matrix
-        # model_loc = glUniformMatrix4fv(location, 1, GL_FALSE, self.model_matrix)
+        # notify which program to use
+        glUseProgram(program)
 
         # draw every frame
         glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
@@ -172,8 +173,6 @@ class Cube(Mesh):
         # init buffers
         self.create_buffers()
         self.update_buffers()   
-
-        # TODO: build model matrix, locate uniform variable "model" and update uniform variable every frame
 
     # called with object instantiation
     def create_buffers(self):
@@ -216,5 +215,17 @@ class Cube(Mesh):
         super().update_buffers()
 
     # inject into update loop
-    def draw(self):
+    def draw(self, program=None):
+        # bind vao
+        if self.vao is not None:
+            glBindVertexArray(self.vao)
+            
+        if program is None:
+            raise ValueError("Program is not specified.")
+
+        # notify which program to use
+        glUseProgram(program)
+
+        # draw every frame
+        glDrawElements(GL_TRIANGLES, len(self.indices), GL_UNSIGNED_INT, None)
         return

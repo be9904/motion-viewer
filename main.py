@@ -22,7 +22,6 @@ plugin_queue = [] # plugin queue to loop at runtime
 
 wnd = _window.Window() # create window
 cam = _camera.Camera() # create camera
-curve = Curve(start_pos=(0.0,0.0,0.0),end_pos=(50.0,0.0,0.0),degree=1,color=(1,1,1),samples=1)
 
 #####################################
 # Assemble Plugins
@@ -33,8 +32,6 @@ plugin_queue.append(cam)
 
 # add plugins
 
-# add projects
-plugin_queue.append(HELLO.HelloCube())
 
 #####################################
 # Main Loop
@@ -65,10 +62,7 @@ def mv_init():
     shader = core.Shader("shaders/std/std.vert", "shaders/std/std.frag")
 
     # exports
-    core.SharedData.export_data("standard_shader", shader) # move to a project class
-    
-    # init axes
-    curve.init_curve()
+    core.SharedData.export_data("std_shader", shader) # set the default shader (fallback)
 
 def mv_terminate():
     wnd.release()
@@ -85,7 +79,6 @@ if __name__ == "__main__":
     # Plugin.update(), Plugin.post_update()
     while not glfw.window_should_close(wnd.window):
         wnd.update()
-        curve.draw_curve()
         call_plugins(plugin_queue, "update")
         
         wnd.post_update()

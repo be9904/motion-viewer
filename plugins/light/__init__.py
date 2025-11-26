@@ -12,7 +12,7 @@ class Light(core.Plugin):
     # assemble all configurations and files
     def assemble(self):
         # imports
-        self.shader = core.SharedData.import_data("standard_shader")
+        self.shader = core.SharedData.import_data("std_shader")
         
         # exports
 

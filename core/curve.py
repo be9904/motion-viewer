@@ -68,7 +68,7 @@ class Curve:
         self.vao = glGenVertexArrays(1)
         self.vbo = glGenBuffers(1)
         
-        # bind buffres
+        # bind buffers
         glBindVertexArray(self.vao)
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
         glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)

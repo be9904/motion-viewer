@@ -10,7 +10,7 @@ class Shader:
 
     @staticmethod
     def load_shader_source(path):
-        with open(path, 'r') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             return f.read()
 
     def compile_shader(self, source, shader_type):
