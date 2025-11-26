@@ -81,6 +81,7 @@ class Sphere(Mesh):
         # init buffers
         self.create_buffers()
         self.update_buffers()
+        
 
     def create_buffers(self):
         vertices = []

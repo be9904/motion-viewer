@@ -62,10 +62,10 @@ def mv_init():
     glfw.set_cursor_pos_callback(wnd.window, core.cursor)
 
     # declare shader
-    shader = core.Shader("shaders/cel/cel.vert", "shaders/cel/cel.frag")
+    shader = core.Shader("shaders/std/std.vert", "shaders/std/std.frag")
 
     # exports
-    core.SharedData.export_data("shader", shader) # move to a project class
+    core.SharedData.export_data("standard_shader", shader) # move to a project class
     
     # init axes
     curve.init_curve()

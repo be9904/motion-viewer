@@ -58,6 +58,20 @@ class SharedData:
     def list_data(cls):
         print(cls._data)
 
+class Object:
+    def __init__(self):
+        self.objects = []
+        self.plugins = []
+
+    def add_object(self, obj):
+        self.objects.append(obj)
+
+    def add_plugin(self, plugin):
+        if not isinstance(plugin, Plugin):
+            raise TypeError("Object must inherit from Plugin")
+        self.plugins.append(plugin)
+
+
 #####################################
 # TRANSFORMATION
 #####################################

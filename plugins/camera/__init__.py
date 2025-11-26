@@ -11,8 +11,8 @@ from .config import *
 
 class Camera(core.Plugin):
     def __init__(self, window=None):
-        # reference to program window TODO: import from SharedData
-        self.wnd = core.SharedData.import_data("window")
+        # reference of window for aspect update
+        self.wnd = None
         
         # eye, at, up vector (lookAt)
         self.eye = np.array([5.0, 5.0, 5.0], dtype=np.float32) # position
@@ -70,7 +70,10 @@ class Camera(core.Plugin):
     
     # assemble all configurations and files
     def assemble(self):
-        # export to shared data
+        # imports
+        self.wnd = core.SharedData.import_data("window")
+        
+        # exports
         core.SharedData.export_data("camera", self)
         return
 
