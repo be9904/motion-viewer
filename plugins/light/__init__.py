@@ -1,7 +1,6 @@
 from OpenGL.GL import *
 
 import core
-from .config import *
 
 class Light(core.Plugin):
     def __init__(self, position=(1.0, -1.0, 1.0, 0.0)):

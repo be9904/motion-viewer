@@ -3,7 +3,6 @@ import sys
 
 INIT_TEMPLATE = \
 '''import core
-from .config import *
 
 class {classname}(core.Plugin):
     def __init__(self):
@@ -24,6 +23,10 @@ class {classname}(core.Plugin):
 
     # executed every frame
     def update(self):
+        return
+
+    # executed at end of frame, after all plugin updates have looped
+    def post_update(self):
         return
 
     # reset any modified parameters or files

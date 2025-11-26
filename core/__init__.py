@@ -34,7 +34,6 @@ class Plugin(ABC):
         pass
 
     # reset any modified parameters or files
-    @abstractmethod
     def reset(self):
         pass
 
@@ -59,18 +58,48 @@ class SharedData:
         print(cls._data)
 
 class Object:
-    def __init__(self):
-        self.objects = []
-        self.plugins = []
+    def __init__(self, name):
+        self.name = name # name of Object (required)
+        self.components = {} # non-plugins
+        self.plugins = {} # plugins
+        self.parent = None # parent Object
+        self.children = [] # list of child Objects
 
-    def add_object(self, obj):
-        self.objects.append(obj)
+    def add_component(self, name, comp):
+        if isinstance(comp, Plugin):
+            raise TypeError("Use add_plugin(plugin_name) instead.")
 
-    def add_plugin(self, plugin):
+        if isinstance(comp, Object):
+            raise TypeError("An Object cannot be added as a component")
+        
+        if name in self.objects:
+            raise KeyError(f"Object with name '{name}' already exists")
+        
+        self.objects[name] = comp
+
+    def add_plugin(self, name, plugin):
         if not isinstance(plugin, Plugin):
             raise TypeError("Object must inherit from Plugin")
-        self.plugins.append(plugin)
 
+        if isinstance(plugin, Object):
+            raise TypeError("An Object cannot be added as a Plugin")
+        
+        if name in self.plugins:
+            raise KeyError(f"Plugin with name '{name}' already exists")
+        
+        self.plugins[name] = plugin
+
+    def set_parent(self, obj):
+        if not isinstance(obj, Object):
+            raise TypeError("Cannot set non-Object as a parent")
+        
+        self.parent = obj
+
+    def set_child(self, obj):
+        if not isinstance(obj, Object):
+            raise TypeError("Cannot set non-Object as a parent")
+        
+        self.children.append(obj)
 
 #####################################
 # TRANSFORMATION

@@ -1,5 +1,4 @@
 import core
-from .config import *
 
 class Scene(core.Plugin):
     def __init__(self):

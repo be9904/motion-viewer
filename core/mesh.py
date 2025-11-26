@@ -82,7 +82,7 @@ class Sphere(Mesh):
         self.create_buffers()
         self.update_buffers()
         
-
+    # called with object instantiation
     def create_buffers(self):
         vertices = []
         normals = []
@@ -120,9 +120,11 @@ class Sphere(Mesh):
         self.indices = np.array(indices, dtype=np.uint32)
         return
     
+    # only when vertex info changes, shouldn't be called
     def update_buffers(self):
         super().update_buffers()
 
+    # call when updating tesselation
     def update_tesselation(self, lat, lon):
         self.lat = lat
         self.lon = lon
@@ -132,6 +134,7 @@ class Sphere(Mesh):
 
         return
 
+    # inject into update loop
     def draw(self, program):
         # bind vao
         if self.vao is not None:
@@ -172,6 +175,7 @@ class Cube(Mesh):
 
         # TODO: build model matrix, locate uniform variable "model" and update uniform variable every frame
 
+    # called with object instantiation
     def create_buffers(self):
         vertices = np.array([
             [-1, -1,  1], [ 1, -1,  1], [ 1,  1,  1], [-1,  1,  1], # Front face (+Z)
@@ -207,8 +211,10 @@ class Cube(Mesh):
         self.indices = indices
         return
 
+    # only when vertex info changes, shouldn't be called
     def update_buffers(self):
         super().update_buffers()
 
+    # inject into update loop
     def draw(self):
         return
