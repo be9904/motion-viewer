@@ -334,22 +334,28 @@ ARCHITECTURE_SUMMARY.md # This file
    - Group objects by material/shader
    - Consider instancing for many identical objects
 
-## Comparison with Other Systems
+## Example of BVH Class Usage
 
-### Unity-like Structure
-```
-GameObject (Unity) = Object (Your system)
-├─ Transform       = Transform
-├─ Components      = components dict
-└─ MonoBehaviors   = plugins dict
-```
+```python
+import core
+from plugins.bvh_loader import BVHLoader
 
-### Unreal-like Structure
-```
-AActor (Unreal) = Object (Your system)
-├─ Transform      = Transform
-└─ Components     = components dict
-```
+# 1. Setup
+bvh = BVH()
+bvh.load_from_path("assets/walk.bvh")
 
-Your system is **component-based** like Unity and Unreal, making it familiar and powerful!
+# 2. Main Loop
+while not glfw.window_should_close(window):
+    # ... standard gl setup ...
 
+    # Update Animation
+    bvh.update()
+
+    # Draw
+    # You only need to draw the root! 
+    # core.Object automatically handles children and matrix multiplication.
+    if bvh.root_object:
+        bvh.root_object.draw(shader_program)
+        
+    # ... swap buffers ...
+```
