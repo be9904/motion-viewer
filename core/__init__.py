@@ -345,6 +345,12 @@ def set_rotate(q):
     return R
 
 def get_model_matrix(position, rotation, scale): # rotation is quaternion    
+    if rotation.shape == ():
+        # Convert numpy-quaternion [w, x, y, z] to float array
+        q_vec = qt.as_float_array(rotation)
+        # Reorder to [x, y, z, w] because set_rotate expects (x, y, z, w)
+        rotation = np.array([q_vec[1], q_vec[2], q_vec[3], q_vec[0]], dtype=np.float32)
+
     if rotation.shape[0] != 4:
         raise ValueError("rotation must be passed as quaternions")
     

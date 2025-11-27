@@ -31,7 +31,7 @@ class Animator(core.Plugin):
         # (Hardcoded for demo, but ideally passed via SharedData or UI)
         try:
             print("Animator: Loading BVH...")
-            self.loader.load_from_path("assets/walk.bvh")
+            self.loader.load_from_path("assets/a_001_1_1.bvh")
             self.start_time = time.time()
             self.last_update_time = time.time()
             print("Animator: Ready.")
