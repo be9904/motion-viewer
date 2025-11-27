@@ -12,7 +12,7 @@ import core
 import core.window as _window
 from core.curve import *
 import plugins.camera as _camera
-import projects.helloCube as HELLO
+from projects.bvhviewer import BVHViewer
 
 #####################################
 # Global Declarations
@@ -24,14 +24,15 @@ wnd = _window.Window() # create window
 cam = _camera.Camera() # create camera
 
 #####################################
-# Assemble Plugins
+# Assemble Plugins & Projects
 #####################################
 
-# add camera to the front of queue
+# add plugins
 plugin_queue.append(cam)
 
-# add plugins
-
+# add projects
+project_bvhviewer = BVHViewer()
+plugin_queue.append(project_bvhviewer)
 
 #####################################
 # Main Loop
@@ -58,10 +59,8 @@ def mv_init():
     glfw.set_mouse_button_callback(wnd.window, core.mouse)
     glfw.set_cursor_pos_callback(wnd.window, core.cursor)
 
-    # declare shader
+    # declare standard shader and export
     shader = core.Shader("shaders/std/std.vert", "shaders/std/std.frag")
-
-    # exports
     core.SharedData.export_data("std_shader", shader) # set the default shader (fallback)
 
 def mv_terminate():
