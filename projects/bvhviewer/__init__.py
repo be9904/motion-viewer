@@ -14,7 +14,7 @@ class BVHViewer(core.Plugin):
         self.floor = None
         self.shader = None
 
-    def assemble(self, import_data):
+    def assemble(self):
         # 1. Get Camera from SharedData
         # We assume the Camera plugin has already been assembled (exported) by main.py
         self.camera = core.SharedData.import_data("camera")

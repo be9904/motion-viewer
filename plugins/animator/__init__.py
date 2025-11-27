@@ -2,14 +2,14 @@ import time
 from OpenGL.GL import glUseProgram
 
 import core
-from plugins.bvh import BVHLoader
+from plugins.bvh import BVH
 from plugins.joint import Joint
 
 class Animator(core.Plugin):
     def __init__(self):
         super().__init__()
         # 1. Composition: The Animator owns the Loader
-        self.loader = BVHLoader()
+        self.loader = BVH()
         
         # 2. Playback State
         self.is_playing = True
