@@ -1,8 +1,10 @@
-import core
-from core.mesh import Sphere
 import time
 import numpy as np
 import quaternion as qt # Assuming numpy-quaternion is available as per your core imports
+
+import core
+from core.mesh import Sphere
+from plugins.joint import Joint
 
 class BVH(core.Plugin):
     def __init__(self):
@@ -140,7 +142,7 @@ class BVH(core.Plugin):
         name = "EndSite" if is_end_site else (parts[1] if len(parts) > 1 else "Unknown")
         
         # --- CREATE CORE OBJECT ---
-        obj = core.Joint(name)
+        obj = Joint(name)
         
         # Add visual component (Sphere)
         # Make joints smaller (0.2) so they look like nodes

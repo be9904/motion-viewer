@@ -61,6 +61,7 @@ def mv_init():
 
     # declare standard shader and export
     shader = core.Shader("shaders/std/std.vert", "shaders/std/std.frag")
+    print(type(shader.program))
     core.SharedData.export_data("std_shader", shader) # set the default shader (fallback)
 
 def mv_terminate():
