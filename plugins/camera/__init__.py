@@ -12,6 +12,8 @@ from .config import *
 
 class Camera(core.Plugin):
     def __init__(self, window=None):
+        super().__init__()
+        
         # reference of window for aspect update
         self.wnd = None
         

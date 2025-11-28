@@ -9,6 +9,8 @@ from core.glwrapper import GLWrapper as glw
 
 class SolarSystem(core.Plugin):
     def __init__(self):
+        super().__init__()
+        
         self.sun = None
         self.shader = None
         self.camera = None

@@ -11,6 +11,8 @@ from plugins.light import Light
 
 class BVHViewer(core.Plugin):
     def __init__(self):
+        super().__init__()
+        
         self.animator = None
         self.camera = None
         self.floor = None

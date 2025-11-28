@@ -4,10 +4,12 @@ import quaternion as qt # Assuming numpy-quaternion is available as per your cor
 
 import core
 from core.mesh import Sphere
-from plugins.joint import Joint
+from core.joint import Joint
 
 class BVH(core.Plugin):
     def __init__(self):
+        super().__init__()
+        
         self.root_object = None 
         self.file_content = ""
         self.lines = []

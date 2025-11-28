@@ -6,7 +6,7 @@ INIT_TEMPLATE = \
 
 class {classname}(core.Plugin):
     def __init__(self):
-        super().__init__() # remove after implementation
+        super().__init__() # add plugin to queue
         # member variables
     
     # assemble all configurations and files

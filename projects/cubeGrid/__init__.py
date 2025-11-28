@@ -8,6 +8,8 @@ from OpenGL.GL import *
 
 class CubeGrid(core.Plugin):
     def __init__(self):
+        super().__init__()
+        
         self.objects = []
         self.shader = None
         self.camera = None

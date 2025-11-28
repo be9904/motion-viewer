@@ -12,7 +12,7 @@ from .shader import Shader
 
 class Plugin(ABC):
     def __init__(self):
-        print(f"{self.__class__.__name__}")
+        PluginQueue.register_callbacks(self)
 
     # assemble all configurations and files
     @abstractmethod
@@ -41,6 +41,21 @@ class Plugin(ABC):
     @abstractmethod
     def release(self):
         pass
+    
+class PluginQueue:
+    _plugin_queue = []
+    
+    @classmethod
+    def register_callbacks(cls, plugin):
+        if not isinstance(plugin, Plugin):
+            raise TypeError(f"Expected a Plugin instance")
+        cls._plugin_queue.append(plugin)
+        return
+    
+    @classmethod
+    def call_plugins(cls, method_name):
+        for plugin in cls._plugin_queue:
+            getattr(plugin, method_name)()
 
 class SharedData:
     _data = {}

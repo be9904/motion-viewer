@@ -15,14 +15,13 @@ from core.curve import *
 import plugins.camera as _camera
 
 # project imports
-from projects.bvhviewer import BVHViewer
-# from projects.solarSystem import SolarSystem
+# from projects.bvhviewer import BVHViewer
+from projects.test import Test
 
 #####################################
 # Global Declarations
 #####################################
 
-plugin_queue = [] # plugin queue to loop at runtime
 shaders = []
 
 mv_window = _window.Window() # create window
@@ -33,20 +32,13 @@ viewport_cam = _camera.Camera() # create camera
 #####################################
 
 # add plugins
-plugin_queue.append(viewport_cam)
 
 # add projects
-bvhviewer = BVHViewer()
-plugin_queue.append(bvhviewer)
-# plugin_queue.append(SolarSystem())
+test = Test()
 
 #####################################
 # Main Loop
 #####################################
-
-def call_plugins(queue, method_name):
-    for plugin in queue:
-        getattr(plugin, method_name)()
 
 def mv_init():
     # initialize glfw window
@@ -76,10 +68,11 @@ if __name__ == "__main__":
     shaders += core.SharedData.import_shaders()
 
     # Plugin.assemble()
-    call_plugins(plugin_queue, "assemble")
+    print(core.PluginQueue._plugin_queue)
+    core.PluginQueue.call_plugins("assemble")
 
     # Plugin.init()
-    call_plugins(plugin_queue, "init")
+    core.PluginQueue.call_plugins("init")
     
     # setup camera matrices
     for shader in shaders:
@@ -89,16 +82,16 @@ if __name__ == "__main__":
     # Plugin.update(), Plugin.post_update()
     while not glfw.window_should_close(mv_window.glfw_window):
         mv_window.update()
-        call_plugins(plugin_queue, "update")
+        core.PluginQueue.call_plugins("update")
         glw.update() # update uniforms
 
         mv_window.post_update()
-        call_plugins(plugin_queue, "post_update")
+        core.PluginQueue.call_plugins("post_update")
 
     # Plugin.reset() in certain conditions
     # call_plugins(plugin_queue, "reset")
 
     # Plugin.release() on reload
-    call_plugins(plugin_queue, "release")
+    core.PluginQueue.call_plugins("release")
 
     mv_terminate()

@@ -6,6 +6,9 @@ from .keyboard import *
 
 class Window(Plugin):
     def __init__(self):
+        # special plugin where callbacks are handled manually
+        # super().__init__() 
+        
         self.glfw_window = None
         self.width = WIDTH
         self.height = HEIGHT

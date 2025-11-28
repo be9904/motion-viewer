@@ -8,6 +8,8 @@ from core.curve import *
 
 class HelloCube(core.Plugin):
     def __init__(self):
+        super().__init__()
+        
         self.camera = None
         self.cube = None
         self.shader = None

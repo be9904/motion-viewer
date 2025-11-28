@@ -2,6 +2,7 @@ import core
 
 class Scene(core.Plugin):
     def __init__(self):
+        super().__init__()
         # member variables
         self.objects = []
         self.axes = None # grid axes
