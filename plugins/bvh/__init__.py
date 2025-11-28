@@ -58,68 +58,69 @@ class BVH(core.Plugin):
             print("BVH Error: No MOTION section found.")
 
     def update(self):
-        if not self.is_playing or not self.frames or not self.root_object:
-            return
+        # if not self.is_playing or not self.frames or not self.root_object:
+        #     return
 
-        # 1. Calculate Frame Index
-        elapsed = time.time() - self.start_time
-        frame_idx = int(elapsed / self.frame_time) % len(self.frames)
-        current_frame_data = self.frames[frame_idx]
+        # # 1. Calculate Frame Index
+        # elapsed = time.time() - self.start_time
+        # frame_idx = int(elapsed / self.frame_time) % len(self.frames)
+        # current_frame_data = self.frames[frame_idx]
         
-        data_ptr = 0
+        # data_ptr = 0
 
-        # 2. Apply Motion to Objects
-        for node in self.animated_nodes:
-            obj = node['object']
-            channels = node['channels']
+        # # 2. Apply Motion to Objects
+        # for node in self.animated_nodes:
+        #     obj = node['object']
+        #     channels = node['channels']
             
-            # Start with the Rest Pose Position (OFFSET)
-            # We copy it so we don't mutate the original rest offset
-            pos = np.array(obj.rest_offset, dtype=np.float32)
+        #     # Start with the Rest Pose Position (OFFSET)
+        #     # We copy it so we don't mutate the original rest offset
+        #     pos = np.array(obj.rest_offset, dtype=np.float32)
             
-            # Dictionary to temporarily hold rotation values for this frame
-            rot_vals = {'X': 0.0, 'Y': 0.0, 'Z': 0.0}
+        #     # Dictionary to temporarily hold rotation values for this frame
+        #     rot_vals = {'X': 0.0, 'Y': 0.0, 'Z': 0.0}
             
-            for channel in channels:
-                val = current_frame_data[data_ptr]
-                data_ptr += 1
+        #     for channel in channels:
+        #         val = current_frame_data[data_ptr]
+        #         data_ptr += 1
                 
-                if channel == "Xposition": pos[0] = val
-                elif channel == "Yposition": pos[1] = val
-                elif channel == "Zposition": pos[2] = val
-                elif channel == "Xrotation": rot_vals['X'] = val
-                elif channel == "Yrotation": rot_vals['Y'] = val
-                elif channel == "Zrotation": rot_vals['Z'] = val
+        #         if channel == "Xposition": pos[0] = val
+        #         elif channel == "Yposition": pos[1] = val
+        #         elif channel == "Zposition": pos[2] = val
+        #         elif channel == "Xrotation": rot_vals['X'] = val
+        #         elif channel == "Yrotation": rot_vals['Y'] = val
+        #         elif channel == "Zrotation": rot_vals['Z'] = val
 
-            # Apply Position
-            # Note: BVH motion data for Root position is usually absolute, 
-            # while children rely on their parent's transform + their offset.
-            # If channels had position, we use the parsed 'pos'. 
-            # If not, 'pos' remains the 'rest_offset'.
-            obj.set_position(pos)
+        #     # Apply Position
+        #     # Note: BVH motion data for Root position is usually absolute, 
+        #     # while children rely on their parent's transform + their offset.
+        #     # If channels had position, we use the parsed 'pos'. 
+        #     # If not, 'pos' remains the 'rest_offset'.
+        #     obj.set_position(pos)
 
-            # Apply Rotation
-            # We must respect the channel order (e.g. Zrotation, then X, then Y)
-            # The node['channel_order'] stores e.g. "ZXY"
+        #     # Apply Rotation
+        #     # We must respect the channel order (e.g. Zrotation, then X, then Y)
+        #     # The node['channel_order'] stores e.g. "ZXY"
             
-            # Start with Identity Quaternion
-            final_quat = np.quaternion(1, 0, 0, 0) 
+        #     # Start with Identity Quaternion
+        #     final_quat = np.quaternion(1, 0, 0, 0) 
             
-            # Apply rotations in the specific order defined by BVH
-            for axis in node['channel_order']:
-                angle_rad = np.radians(rot_vals[axis])
+        #     # Apply rotations in the specific order defined by BVH
+        #     for axis in node['channel_order']:
+        #         angle_rad = np.radians(rot_vals[axis])
                 
-                if axis == 'X':
-                    q = qt.from_euler_angles(angle_rad, 0, 0)
-                elif axis == 'Y':
-                    q = qt.from_euler_angles(0, angle_rad, 0)
-                elif axis == 'Z':
-                    q = qt.from_euler_angles(0, 0, angle_rad)
+        #         if axis == 'X':
+        #             q = qt.from_euler_angles(angle_rad, 0, 0)
+        #         elif axis == 'Y':
+        #             q = qt.from_euler_angles(0, angle_rad, 0)
+        #         elif axis == 'Z':
+        #             q = qt.from_euler_angles(0, 0, angle_rad)
                 
-                # Multiply current rotation by new axis rotation
-                final_quat = final_quat * q
+        #         # Multiply current rotation by new axis rotation
+        #         final_quat = final_quat * q
 
-            obj.transform.set_rotation_quat(qt.as_float_array(final_quat))
+        #     obj.transform.set_rotation_quat(qt.as_float_array(final_quat))
+        return
 
     def release(self):
         self.root_object = None
@@ -139,7 +140,7 @@ class BVH(core.Plugin):
         name = "EndSite" if is_end_site else (parts[1] if len(parts) > 1 else "Unknown")
         
         # --- CREATE CORE OBJECT ---
-        obj = core.Object(name)
+        obj = core.Joint(name)
         
         # Add visual component (Sphere)
         # Make joints smaller (0.2) so they look like nodes
