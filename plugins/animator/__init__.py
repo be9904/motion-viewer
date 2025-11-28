@@ -7,7 +7,6 @@ from plugins.joint import Joint
 
 class Animator(core.Plugin):
     def __init__(self):
-        super().__init__()
         # 1. Composition: The Animator owns the Loader
         self.loader = BVH()
         

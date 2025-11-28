@@ -46,7 +46,7 @@ class GLWrapper:
     def set_uniform(cls, program, uniform, name="name"):
         uloc = glGetUniformLocation( program, name )
         if uloc < 0:
-            print(f"Unable to locate uniform {name}")
+            print(f"{inspect.currentframe().f_code.co_name}: Unable to locate uniform {name}")
             return
             
         # locate uniform
@@ -60,7 +60,7 @@ class GLWrapper:
     def set_instance_uniform(cls, program, vao, uniform, idx_count, name="name"):
         uloc = glGetUniformLocation( program, name )
         if uloc < 0:
-            print(f"Unable to locate uniform {name}")
+            print(f"{inspect.currentframe().f_code.co_name}: Unable to locate uniform {name}")
             
         # locate uniform
         glUseProgram(program)
@@ -193,7 +193,6 @@ class GLWrapper:
         for program in GLWrapper._uniforms.keys():
             GLWrapper.update_uniforms(program)
             GLWrapper.draw_instances(program)
-        return
 
     # # executed at end of frame, after all plugin updates have looped
     # def post_update(self):

@@ -11,7 +11,6 @@ from plugins.light import Light
 
 class BVHViewer(core.Plugin):
     def __init__(self):
-        super().__init__()
         self.animator = None
         self.camera = None
         self.floor = None
@@ -56,7 +55,7 @@ class BVHViewer(core.Plugin):
             self.floor.components["mesh"].vao, 
             self.floor.components["mesh"].model,
             len(self.floor.components["mesh"].indices),
-            name="model"
+            name="model_matrix"
         )
         
         self.light = Light()

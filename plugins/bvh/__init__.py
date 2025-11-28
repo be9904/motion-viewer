@@ -8,7 +8,6 @@ from plugins.joint import Joint
 
 class BVH(core.Plugin):
     def __init__(self):
-        super().__init__()
         self.root_object = None 
         self.file_content = ""
         self.lines = []

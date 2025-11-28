@@ -6,7 +6,7 @@ from .keyboard import *
 
 class Window(Plugin):
     def __init__(self):
-        self.window = None
+        self.glfw_window = None
         self.width = WIDTH
         self.height = HEIGHT
         
@@ -20,14 +20,14 @@ class Window(Plugin):
         glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, True)  # Required on macOS
         
         # create window
-        self.window = glfw.create_window(WIDTH, HEIGHT, TITLE, None, None)
+        self.glfw_window = glfw.create_window(WIDTH, HEIGHT, TITLE, None, None)
 
-        if not self.window:
+        if not self.glfw_window:
             glfw.terminate()
             raise Exception("Failed to create GLFW window")
         
         # make the OpenGL context current
-        glfw.make_context_current(self.window)
+        glfw.make_context_current(self.glfw_window)
         
         # export window object
         SharedData.export_data("window", self)
@@ -37,7 +37,7 @@ class Window(Plugin):
         # add ui
 
         # set keyboard callbacks
-        glfw.set_key_callback(self.window, key_callback)
+        glfw.set_key_callback(self.glfw_window, key_callback)
         
         return
 
@@ -56,7 +56,7 @@ class Window(Plugin):
     # executed after drawing elements
     def post_update(self):
         # swap front and back buffers
-        glfw.swap_buffers(self.window)
+        glfw.swap_buffers(self.glfw_window)
         
         return
 
@@ -66,10 +66,10 @@ class Window(Plugin):
 
     # release runtime data
     def release(self):
-        if not self.window:
+        if not self.glfw_window:
             return
         
-        glfw.destroy_window(self.window)
+        glfw.destroy_window(self.glfw_window)
         glfw.terminate()
 
         return
