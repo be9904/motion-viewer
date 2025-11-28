@@ -10,6 +10,7 @@ from OpenGL.GLU import *
 # local imports
 import core
 import core.window as _window
+import core.glwrapper as glw
 from core.curve import *
 import plugins.camera as _camera
 from projects.bvhviewer import BVHViewer
@@ -47,11 +48,7 @@ def mv_init():
     wnd.init()
 
     # init gl states
-    glLineWidth(1.0)
-    glClearColor(*_window.BG_COLOR)
-    glEnable(GL_DEPTH_TEST)
-    glEnable(GL_CULL_FACE)
-    glCullFace(GL_BACK)
+    glw.init()
 
     # set callbacks
     glfw.set_window_size_callback(wnd.window, core.resize)
@@ -80,6 +77,7 @@ if __name__ == "__main__":
     while not glfw.window_should_close(wnd.window):
         wnd.update()
         call_plugins(plugin_queue, "update")
+        glw.update()
         
         wnd.post_update()
         call_plugins(plugin_queue, "post_update")

@@ -2,14 +2,12 @@ from OpenGL.GL import *
 import numpy as np
 import inspect
 
-import core
-
 # an OpenGL wrapper class that is always at the end of the plugin queue.
-class GLWrapper(core.Plugin):
+class GLWrapper:
     _uniforms = {} # dictionary of { PROGRAM : { ULOC_1 : (UNIFORM_NAME_1, UNIFORM_1), ULOC_2 : (UNIFORM_NAME_2, UNIFORM_2), ... } }
     
     #####################################
-    # CLASS METHODS
+    # WRAPPER FUNCTIONS
     #####################################
     
     @classmethod
@@ -105,25 +103,32 @@ class GLWrapper(core.Plugin):
             cls.update_uniform(uloc, uniform_pair[1])
     
     #####################################
-    # USER CALLBACKS
+    # CALLBACKS
     #####################################
     
     def __init__(self):
         self.uniforms = []
         # member variables
     
-    # assemble all configurations and files
-    def assemble(self):
-        # imports
+    # # assemble all configurations and files
+    # def assemble(self):
+    #     # imports
 
-        # exports
+    #     # exports
 
-        return
+    #     return
 
+    @classmethod
     # setup basic settings before update loop
     def init(self):
+        # init gl states
+        glLineWidth(1.0)
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_CULL_FACE)
+        glCullFace(GL_BACK)
         return
 
+    @classmethod
     # executed every frame
     def update(self):
         # update uniforms every frame
@@ -131,15 +136,15 @@ class GLWrapper(core.Plugin):
             GLWrapper.update_uniforms(program)
         return
 
-    # executed at end of frame, after all plugin updates have looped
-    def post_update(self):
-        return
+    # # executed at end of frame, after all plugin updates have looped
+    # def post_update(self):
+    #     return
 
-    # reset any modified parameters or files
-    def reset(self):
-        return
+    # # reset any modified parameters or files
+    # def reset(self):
+    #     return
 
-    # release runtime data
-    def release(self):
-        return
+    # # release runtime data
+    # def release(self):
+    #     return
     
