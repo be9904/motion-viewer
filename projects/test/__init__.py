@@ -7,7 +7,7 @@ from core.mesh import Sphere
 from OpenGL.GL import *
 from core.glwrapper import GLWrapper as glw
 
-class SolarSystem(core.Plugin):
+class Test(core.Plugin):
     def __init__(self):
         self.sun = None
         self.shader = None
@@ -33,39 +33,6 @@ class SolarSystem(core.Plugin):
         sun_mesh = Sphere(lat=32, lon=32)
         self.sun.add_component("mesh", sun_mesh)
         glw.set_uniform(self.shader.program, self.sun.components["mesh"].model, "model_matrix")
-        
-        # Earth (child of Sun)
-        self.earth = core.Object(
-            name="Earth",
-            position=(8, 0, 0),  # 8 units away from sun
-            rotation=(0, 0, 0),
-            scale=(0.8, 0.8, 0.8)
-        )
-        earth_mesh = Sphere(lat=24, lon=24)
-        self.earth.add_component("mesh", earth_mesh)
-        self.sun.add_child(self.earth)  # Earth orbits Sun
-        
-        # Moon (child of Earth)
-        self.moon = core.Object(
-            name="Moon",
-            position=(2, 0, 0),  # 2 units away from Earth
-            rotation=(0, 0, 0),
-            scale=(0.3, 0.3, 0.3)
-        )
-        moon_mesh = Sphere(lat=16, lon=16)
-        self.moon.add_component("mesh", moon_mesh)
-        self.earth.add_child(self.moon)  # Moon orbits Earth
-        
-        # Mars (child of Sun)
-        self.mars = core.Object(
-            name="Mars",
-            position=(12, 0, 0),
-            rotation=(0, 0, 0),
-            scale=(0.6, 0.6, 0.6)
-        )
-        mars_mesh = Sphere(lat=20, lon=20)
-        self.mars.add_component("mesh", mars_mesh)
-        self.sun.add_child(self.mars)
         
         print("Solar System created!")
         print(f"  Sun has {len(self.sun.children)} children")

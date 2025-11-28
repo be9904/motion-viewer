@@ -43,7 +43,7 @@ class Window(Plugin):
 
     # setup basic settings (window, gui, logs etc)
     def init(self):
-        glClearColor(BG_COLOR)
+        glClearColor(*BG_COLOR)
         return
 
     # executed every frame

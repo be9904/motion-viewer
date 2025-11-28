@@ -44,6 +44,7 @@ class Plugin(ABC):
 
 class SharedData:
     _data = {}
+    _shaders = {}
 
     @classmethod
     def export_data(cls, name, value):
@@ -53,9 +54,30 @@ class SharedData:
     def import_data(cls, name):
         return cls._data.get(name, None)
     
+    @classmethod
+    def export_shader(cls, name, value):
+        if not isinstance(value, Shader):
+            raise TypeError(f"Expected a Shader instance for '{name}', got {type(value).__name__}")
+        cls._shaders[name] = value
+
+    @classmethod
+    def import_shader(cls, name):
+        return cls._shaders.get(name, None)
+    
+    @classmethod
+    def import_shaders(cls):
+        shaders = []
+        for shader in cls._shaders.values():
+            shaders.append(shader)
+        return shaders
+    
     @classmethod # for debugging
     def list_data(cls):
         print(cls._data)
+        
+    @classmethod # for debugging
+    def list_shaders(cls):
+        print(cls._shaders)
 
 class Transform:
     """Transform component for position, rotation, scale"""

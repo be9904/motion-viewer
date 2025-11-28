@@ -3,7 +3,7 @@ from OpenGL.GL import *
 import core
 
 class Light(core.Plugin):
-    def __init__(self, position=(1.0, -1.0, 1.0, 0.0)):
+    def __init__(self, position=(1.0, 3.0, 1.0, 0.0)):
         self.position = position
         self.color = (1,1,1)
         self.intensity = 1.0
@@ -16,7 +16,7 @@ class Light(core.Plugin):
     # assemble all configurations and files
     def assemble(self):
         # imports
-        self.shader = core.SharedData.import_data("std_shader")
+        self.shader = core.SharedData.import_shader("std_shader")
         
         # exports
 

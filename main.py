@@ -10,16 +10,20 @@ from OpenGL.GLU import *
 # local imports
 import core
 import core.window as _window
-import core.glwrapper as glw
+from core.glwrapper import GLWrapper as glw
 from core.curve import *
 import plugins.camera as _camera
+
+# project imports
 from projects.bvhviewer import BVHViewer
+# from projects.solarSystem import SolarSystem
 
 #####################################
 # Global Declarations
 #####################################
 
 plugin_queue = [] # plugin queue to loop at runtime
+shaders = []
 
 wnd = _window.Window() # create window
 cam = _camera.Camera() # create camera
@@ -32,8 +36,9 @@ cam = _camera.Camera() # create camera
 plugin_queue.append(cam)
 
 # add projects
-project_bvhviewer = BVHViewer()
-plugin_queue.append(project_bvhviewer)
+bvhviewer = BVHViewer()
+plugin_queue.append(bvhviewer)
+# plugin_queue.append(SolarSystem())
 
 #####################################
 # Main Loop
@@ -56,29 +61,37 @@ def mv_init():
     glfw.set_mouse_button_callback(wnd.window, core.mouse)
     glfw.set_cursor_pos_callback(wnd.window, core.cursor)
 
-    # declare standard shader and export
+    # declare shaders and export
     shader = core.Shader("shaders/std/std.vert", "shaders/std/std.frag")
-    print(type(shader.program))
-    core.SharedData.export_data("std_shader", shader) # set the default shader (fallback)
+    core.SharedData.export_shader("std_shader", shader) # set the default shader (fallback)
 
 def mv_terminate():
     wnd.release()
 
 if __name__ == "__main__":   
+    # init the motion viewer
     mv_init()
+    
+    # reference shaders
+    shaders += core.SharedData.import_shaders()
 
     # Plugin.assemble()
     call_plugins(plugin_queue, "assemble")
 
     # Plugin.init()
     call_plugins(plugin_queue, "init")
+    
+    # setup camera matrices
+    for shader in shaders:
+        glw.set_uniform(shader.program, cam.view, "view_matrix")
+        glw.set_uniform(shader.program, cam.projection, "projection_matrix")
 
     # Plugin.update(), Plugin.post_update()
     while not glfw.window_should_close(wnd.window):
         wnd.update()
         call_plugins(plugin_queue, "update")
-        glw.update()
-        
+        glw.update() # update uniforms
+
         wnd.post_update()
         call_plugins(plugin_queue, "post_update")
 

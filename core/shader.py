@@ -54,6 +54,8 @@ class Shader:
         # use program
         glUseProgram(self.program)        
 
+    # WILL DELETE
+
     def set_uniform_matrix4fv(self, name, mat):
         loc = glGetUniformLocation(self.program, name)
         if loc != -1:

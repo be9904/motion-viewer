@@ -3,8 +3,11 @@ import numpy as np
 from OpenGL.GL import *
 
 # Import your specific plugins
-from plugins.animator import Animator
+import core
 from core.mesh import Cube
+from core.glwrapper import GLWrapper as glw
+from plugins.animator import Animator
+from plugins.light import Light
 
 class BVHViewer(core.Plugin):
     def __init__(self):
@@ -12,6 +15,7 @@ class BVHViewer(core.Plugin):
         self.animator = None
         self.camera = None
         self.floor = None
+        self.light = None
         self.shader = None
 
     def assemble(self):
@@ -22,7 +26,7 @@ class BVHViewer(core.Plugin):
         if self.camera:
             # 2. Configure Camera specifically for this Scene
             # Override default camera position to see the skeleton
-            self.camera.eye = np.array([0.0, 20.0, 100.0], dtype=np.float32)
+            self.camera.eye = np.array([0.0, 10.0, 1.0], dtype=np.float32)
             self.camera.at = np.array([0.0, 10.0, 0.0], dtype=np.float32)
             
             # Force a matrix update so 'view' and 'projection' are valid immediately
@@ -31,9 +35,9 @@ class BVHViewer(core.Plugin):
         else:
             print("BVHViewer Warning: No 'camera' found in SharedData. Ensure Camera plugin is assembled first.")
 
-        # 3. Setup Shader
+        # 3. Setup Shaders to use in Scene
         try:
-            self.shader = core.Shader("assets/shaders/vertex.glsl", "assets/shaders/fragment.glsl")
+            self.shader = core.Shader("shaders/std/std.vert", "shaders/std/std.frag")
             core.SharedData.export_data("standard_shader", self.shader)
         except Exception as e:
             print(f"Project Error: Could not load shaders. {e}")
@@ -46,6 +50,19 @@ class BVHViewer(core.Plugin):
         # 2. Create Floor
         self.floor = core.Object("Floor", position=(0, 0, 0), scale=(50, 0.1, 50))
         self.floor.add_component("mesh", Cube())
+        self.floor.add_component("shader", self.shader)
+        glw.set_instance_uniform(
+            self.shader.program, 
+            self.floor.components["mesh"].vao, 
+            self.floor.components["mesh"].model,
+            len(self.floor.components["mesh"].indices),
+            name="model"
+        )
+        
+        self.light = Light()
+        glw.set_uniform(self.shader.program, self.light.position,  "light_position")
+        glw.set_uniform(self.shader.program, self.light.color,     "light_color")
+        glw.set_uniform(self.shader.program, self.light.intensity, "light_intensity")
         
         print("BVHViewer: Initialized.")
 
@@ -60,14 +77,14 @@ class BVHViewer(core.Plugin):
             self.animator.update()
 
         # 3. Draw Floor
-        if self.shader and self.floor:
-            glUseProgram(self.shader.program)
+        # if self.shader and self.floor:
+        #     glUseProgram(self.shader.program)
             
-            if self.camera:
-                self.shader.set_uniform_matrix4fv("view_matrix", self.camera.view)
-                self.shader.set_uniform_matrix4fv("projection_matrix", self.camera.projection)
+        #     if self.camera:
+        #         glw.set_uniform(self.shader.program, "view_matrix", self.camera.view)
+        #         glw.set_uniform(self.shader.program, "projection_matrix", self.camera.projection)
             
-            self.floor.draw(self.shader.program)
+        # self.floor.draw(self.shader.program)
 
     def release(self):
         if self.animator:

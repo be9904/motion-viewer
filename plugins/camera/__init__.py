@@ -7,6 +7,7 @@ import quaternion
 
 # local imports
 import core
+from core.glwrapper import GLWrapper as glw
 from .config import *
 
 class Camera(core.Plugin):
@@ -78,7 +79,9 @@ class Camera(core.Plugin):
         return
 
     # setup basic settings (window, gui, logs etc)
-    def init(self):                
+    def init(self):      
+        # set uniforms
+        glw.set_uniform
         return
 
     # executed every frame

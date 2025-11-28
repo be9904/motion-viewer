@@ -1,7 +1,9 @@
 import numpy as np
 from OpenGL.GL import *
-import core
 import quaternion as qt
+
+import core
+from core.glwrapper import GLWrapper as glw
 
 class Mesh:
     def __init__(self, size=1.0):
@@ -13,7 +15,7 @@ class Mesh:
         # buffers
         self.vao = None # vertex array
         self.vbo = None # vertex buffer
-        self.ibo = None # index buffer
+        self.ebo = None # index buffer
 
         # model matrix
         self.model_matrix = None
@@ -47,8 +49,8 @@ class Mesh:
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, None) # bind normals to location 1
 
         # index buffer
-        self.ibo = glGenBuffers(1)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)
+        self.ebo = glGenBuffers(1)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ebo)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, self.indices.nbytes, self.indices, GL_STATIC_DRAW)
 
         # unbind vao at end
