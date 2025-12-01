@@ -17,9 +17,6 @@ class Mesh:
         self.vbo = None # vertex buffer
         self.ebo = None # index buffer
 
-        # model matrix
-        self.model_matrix = None
-
         print("WARNING: This class should not be instantiated. Use a child class or define a child class of this class.")
 
     def update_buffers(self):
@@ -57,19 +54,19 @@ class Mesh:
         glBindVertexArray(0)
 
 class Sphere(Mesh):
-    def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=(1.0,1.0,1.0), lat=64, lon=64):
-        self.position = np.array(position, dtype=np.float32)
-        self.rotation = np.array(rotation, dtype=np.float32)
-        self.scale = np.array(scale, dtype=np.float32)
+    def __init__(self, lat=64, lon=64):
+        # self.position = np.array(position, dtype=np.float32)
+        # self.rotation = np.array(rotation, dtype=np.float32)
+        # self.scale = np.array(scale, dtype=np.float32)
 
-        self.quaternion = qt.from_euler_angles(
-            np.radians(self.rotation[0]),
-            np.radians(self.rotation[1]),
-            np.radians(self.rotation[2]),
-        )
+        # self.quaternion = qt.from_euler_angles(
+        #     np.radians(self.rotation[0]),
+        #     np.radians(self.rotation[1]),
+        #     np.radians(self.rotation[2]),
+        # )
 
-        # model matrix
-        self.model = core.get_model_matrix(self.position, self.quaternion, self.scale)
+        # # model matrix
+        # self.model = core.get_model_matrix(self.position, self.quaternion, self.scale)
 
         # tesselation
         self.lat = lat
@@ -153,19 +150,19 @@ class Sphere(Mesh):
         return
         
 class Cube(Mesh):
-    def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=(1.0,1.0,1.0)):
-        self.position = np.array(position, dtype=np.float32)
-        self.rotation = np.array(rotation, dtype=np.float32)
-        self.scale = np.array(scale, dtype=np.float32)
+    def __init__(self):
+        # self.position = np.array(position, dtype=np.float32)
+        # self.rotation = np.array(rotation, dtype=np.float32)
+        # self.scale = np.array(scale, dtype=np.float32)
 
-        self.quaternion = qt.from_euler_angles(
-            np.radians(self.rotation[0]),
-            np.radians(self.rotation[1]),
-            np.radians(self.rotation[2]),
-        )
+        # self.quaternion = qt.from_euler_angles(
+        #     np.radians(self.rotation[0]),
+        #     np.radians(self.rotation[1]),
+        #     np.radians(self.rotation[2]),
+        # )
 
-        # model matrix
-        self.model = core.get_model_matrix(self.position, self.quaternion, self.scale)
+        # # model matrix
+        # self.model = core.get_model_matrix(self.position, self.quaternion, self.scale)
 
         # buffers
         self.vertices = None
