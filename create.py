@@ -3,22 +3,30 @@ import sys
 
 INIT_TEMPLATE = \
 '''import core
-from .config import *
 
 class {classname}(core.Plugin):
     def __init__(self):
-        super().__init__() # remove after implementation
+        super().__init__() # add plugin to queue
+        # member variables
     
     # assemble all configurations and files
     def assemble(self):
+        # imports
+
+        # exports
+
         return
 
-    # setup basic settings (window, gui, logs etc)
+    # setup basic settings before update loop
     def init(self):
         return
 
     # executed every frame
     def update(self):
+        return
+
+    # executed at end of frame, after all plugin updates have looped
+    def post_update(self):
         return
 
     # reset any modified parameters or files
@@ -29,11 +37,11 @@ class {classname}(core.Plugin):
     def release(self):
         return
 '''
-CONFIG_TEMPLATE = \
-'''#####################################
-# CONFIGURATIONS
-#####################################
-'''
+# CONFIG_TEMPLATE = \
+# '''#####################################
+# # CONFIGURATIONS
+# #####################################
+# '''
 
 # converts a string to PascalCase.
 def to_pascal_case(name):
@@ -51,20 +59,17 @@ def create_plugin(plugin_name, parent_dir="."):
     with open(init_file, "w") as f:
         f.write(INIT_TEMPLATE.format(classname=classname))
 
-    # config.py
-    config_file = os.path.join(module_path, "config.py")
-    with open(config_file, "w") as f:
-        f.write(CONFIG_TEMPLATE)
+    # # config.py
+    # config_file = os.path.join(module_path, "config.py")
+    # with open(config_file, "w") as f:
+    #     f.write(CONFIG_TEMPLATE)
 
     print(f"Created Plugin: {plugin_name}")
 
-def main():
+if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python create.py {plugin_name}")
         sys.exit(1)
 
     plugin_name = sys.argv[1].strip()
     create_plugin(plugin_name, parent_dir="plugins")
-
-if __name__ == "__main__":
-    main()
