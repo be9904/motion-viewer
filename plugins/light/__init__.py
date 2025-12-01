@@ -4,10 +4,10 @@ import core
 from core.glwrapper import GLWrapper as glw
 
 class Light(core.Plugin):
-    def __init__(self, position=(1.0, 5.0, 1.0, 0.0)):
+    def __init__(self, position=(1.0, -5.0, 1.0, 0.0)):
         super().__init__()
         
-        self.position = position
+        self.transform = core.Transform(position=position)
         self.color = (1,1,1)
         self.intensity = 1.0
         
@@ -25,21 +25,22 @@ class Light(core.Plugin):
     # setup basic settings before update loop
     def init(self):
         # init uniforms
-        glw.set_uniform(self.shader.program, self.position,  "light_position")
-        glw.set_uniform(self.shader.program, self.color,     "light_color")
-        glw.set_uniform(self.shader.program, self.intensity, "light_intensity")
+        glw.set_uniform(self.shader.program, self.transform.position,   "light_position")
+        glw.set_uniform(self.shader.program, self.color,                "light_color")
+        glw.set_uniform(self.shader.program, self.intensity,            "light_intensity")
         return
 
     # executed every frame
     def update(self):
+        self.transform.update()
         return
 
     # reset any modified parameters or files
     def reset(self):
-        self.position = (1.0, -1.0, 1.0, 0.0)
+        # self.position = (1.0, -1.0, 1.0, 0.0)
         return
 
     # release runtime data
     def release(self):
-        self.position = None
+        # self.position = None
         return

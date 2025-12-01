@@ -83,7 +83,6 @@ class Camera(core.Plugin):
     # setup basic settings (window, gui, logs etc)
     def init(self):      
         # set uniforms
-        glw.set_uniform
         return
 
     # executed every frame
@@ -92,8 +91,8 @@ class Camera(core.Plugin):
         self.aspect = self.wnd.width / self.wnd.height
         
         # update matrices
-        self.view = self.look_at()
-        self.projection = self.perspective()
+        self.view[:] = self.look_at()
+        self.projection[:] = self.perspective()
 
         return
 

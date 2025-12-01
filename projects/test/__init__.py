@@ -10,34 +10,32 @@ class Test(core.Plugin):
     def __init__(self):
         super().__init__()
         
-        self.sphere = None
-        self.light = Light() # plugins should be instantiated in __init__()
+        self.sun = core.Object("sun",scale=(2,2,2))
+        self.light = Light()
     
     def assemble(self):
+        print("Test.assemble()")
         self.shader = core.SharedData.import_shader("std_shader")
     
     def init(self):        
+        print("Test.init()")
         # Sun (root object)
-        self.sphere = core.Object(
-            name="Sun",
-            position=(0, 0, 0),
-            rotation=(0, 0, 0),
-            scale=(2, 2, 2)
-        )
-        self.sphere.add_component("mesh", Sphere(lat=32, lon=32))
-        glw.set_instance_uniform(
-            self.shader.program,
-            self.sphere.components["mesh"].vao,
-            self.sphere.components["mesh"].model,
-            len(self.sphere.components["mesh"].indices)
-        )
+        self.sun.mesh = Sphere(lat=32, lon=32)
+        self.sun.shader = self.shader
+        self.sun.init()
+
+        # light
+        # self.light = 
         
-        print(f"  Sphere has {len(self.sphere.children)} children")
+        print(f"sun has {len(self.sun.children)} children")
     
     def update(self):
-        if not self.shader or not self.sphere:
+        if not self.shader or not self.sun:
             print(f"Corrupt initialization. Check {'shader' if not self.shader else ''}")
             return
+
+        self.sun.update()
+        # self.sun.draw()
     
     def reset(self):
         return

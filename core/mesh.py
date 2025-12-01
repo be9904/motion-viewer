@@ -114,7 +114,7 @@ class Sphere(Mesh):
                 indices.extend([first, second, first + 1])
                 indices.extend([second, second + 1, first + 1])
                 
-        self.vertices = np.array(vertices, dtype=np.float32) * self.scale
+        self.vertices = np.array(vertices, dtype=np.float32)
         self.normals = np.array(normals, dtype=np.float32)
         self.indices = np.array(indices, dtype=np.uint32)
         return

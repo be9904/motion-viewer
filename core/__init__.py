@@ -5,6 +5,9 @@ import numpy as np
 import quaternion as qt
 
 from .util import *
+from .mesh import *
+from .shader import *
+from .glwrapper import GLWrapper as glw
 
 #####################################
 # PLUGIN
@@ -95,22 +98,31 @@ class SharedData:
         print(cls._shaders)
 
 class Transform:
-    """Transform component for position, rotation, scale"""
-    def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0, 1.0), scale=(1.0, 1.0, 1.0)):
+    def __init__(self, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=(1.0, 1.0, 1.0)):
         # Local transform (relative to parent)
         self.position = np.array(position, dtype=np.float32)
         
         # store rotation as quaternion (x, y, z, w)
         if len(rotation) == 3:
+            # rotation as euler
+            self.euler = np.array(rotation, dtype=np.float32)
+            
             # convert euler angles (degrees) to quaternion
             self.rotation = qt.from_euler_angles(
                 np.radians(rotation[0]),
                 np.radians(rotation[1]),
                 np.radians(rotation[2])
             )
-        else:
+        elif len(rotation) == 4:
             # if already a quaternion
             self.rotation = np.array(rotation, dtype=np.float32)
+
+            # store euler
+            self.euler = qt.to_euler_angles(self.rotation)
+        else:
+            print("Invalid rotation format. Expected 3 or 4 elements.")
+            self.rotation = np.array([0.0, 0.0, 0.0, 1.0], dtype=np.float32)
+            self.euler = np.array([0.0, 0.0, 0.0], dtype=np.float32)
         
         # scale of transform
         self.scale = np.array(scale, dtype=np.float32)
@@ -118,12 +130,19 @@ class Transform:
         # cached local matrix
         self._local_matrix = None
         self._dirty = True
-    
-    # get local transformation matrix (T * R * S)
-    def get_local_matrix(self):
+
+    def update(self):
+        # update local transformation matrix
         if self._dirty:
             self._local_matrix = get_model_matrix(self.position, self.rotation, self.scale)
             self._dirty = False
+
+        # update uniforms
+        glw.update()
+    
+    # get local transformation matrix (T * R * S)
+    def get_local_matrix(self):
+        self.update()
         return self._local_matrix
     
     # set local position
@@ -141,7 +160,7 @@ class Transform:
         self._dirty = True
     
     # set rotation from quaternion
-    def set_rotation_quat(self, quaternion):
+    def set_rotation_quaternion(self, quaternion):
         self.rotation = np.array(quaternion, dtype=np.float32)
         self._dirty = True
     
@@ -165,28 +184,50 @@ class Transform:
         self.rotation = self.rotation * delta_quat
         self._dirty = True
 
+    # rotate by delta quaternion
+    def rotate_quaternion(self, delta_quaternion):
+        if len(delta_quaternion) != 4:
+            raise ValueError("Delta quaternion must be a 4-element array")
+
+        self.rotation = self.rotation * delta_quaternion
+        self.euler = qt.to_euler_angles(self.rotation)
+        self._dirty = True
+
 class Object:
     def __init__(self, name, position=(0.0, 0.0, 0.0), rotation=(0.0, 0.0, 0.0), scale=(1.0, 1.0, 1.0)):
         self.name = name
-        self.components = {}  # non-plugin components (meshes, etc.)
-        self.plugins = {}     # plugin components
         self.parent = None    # parent Object
         self.children = []    # child Objects
         
-        # every Object has a Transform by default
+        # default components
         self.transform = Transform(position, rotation, scale)
+        self.mesh = Cube()
+        self.shader = None
         
+        # list of other components and plugins
+        self.components = {}  # non-plugin components (meshes, etc.)
+        self.plugins = {}     # plugin components
+
         # cached world matrix
         self._world_matrix = None
         self._world_dirty = True
 
-    # add a component (mesh, material, etc.) to this object
+    # call in init() callbacks
+    def init(self):
+        self.transform._local_matrix = self.transform.get_local_matrix() # init transform's local matrix
+        glw.set_instance_uniform(self.shader.program, self.mesh.vao, self.transform.get_local_matrix(), len(self.mesh.indices), "model_matrix")
+        glw.update() # initial update
+
+    # add a component to this object
     def add_component(self, name, comp):
         if isinstance(comp, Plugin):
             raise TypeError("Use add_plugin(plugin_name) instead.")
         
         if isinstance(comp, Object):
             raise TypeError("An Object cannot be added as a component. Use add_child() instead.")
+
+        if isinstance(comp, Mesh):
+            raise TypeError("A Mesh cannot be added as a component. Use add_child() instead.")
         
         if name in self.components:
             print(f"Component with name '{name}' already exists")
@@ -291,6 +332,11 @@ class Object:
     def set_rotation_euler(self, euler_angles):
         self.transform.set_rotation_euler(euler_angles)
         self._mark_world_dirty()
+
+    # set local rotation from quaternion             
+    def set_rotation_quaternion(self, quaternion):
+        self.transform.set_rotation_quat(quaternion)
+        self._mark_world_dirty()
     
     # set local scale
     def set_scale(self, scale):
@@ -309,6 +355,9 @@ class Object:
     
     # update this object and all children (call every frame if needed)
     def update(self):
+        # update transform
+        self.transform.update()
+
         # update components
         for comp in self.components.values():
             if hasattr(comp, 'update'):
@@ -323,25 +372,27 @@ class Object:
         for child in self.children:
             child.update()
     
-    def draw(self, shader_program=None):
-        # draw this object and all children
-        # draw components with draw method (meshes etc.)
-        for comp in self.components.values():
-            if hasattr(comp, 'draw'):
-                # pass world matrix to shader
-                world_mat = self.get_world_matrix()
-                if shader_program:
-                    # set the model matrix uniform here
-                    loc = glGetUniformLocation(shader_program, "model_matrix")
-                    if loc != -1:
-                        glUniformMatrix4fv(loc, 1, GL_FALSE, world_mat)
-                    comp.draw(shader_program)
-                else:
-                    comp.draw()
+    def draw(self):
+        if self.mesh:
+            self.mesh.draw(self.shader.program)
         
         # draw children recursively
         for child in self.children:
-            child.draw(shader_program)
+            child.draw(child.shader.program)
+        # # draw this object and all children
+        # # draw components with draw method (meshes etc.)
+        # for comp in self.components.values():
+        #     if hasattr(comp, 'draw'):
+        #         # pass world matrix to shader
+        #         world_mat = self.get_world_matrix()
+        #         if shader_program:
+        #             # set the model matrix uniform here
+        #             loc = glGetUniformLocation(shader_program, "model_matrix")
+        #             if loc != -1:
+        #                 glUniformMatrix4fv(loc, 1, GL_FALSE, world_mat)
+        #             comp.draw(shader_program)
+        #         else:
+        #             comp.draw()
 
 #####################################
 # USER CALLBACK FUNCTIONS

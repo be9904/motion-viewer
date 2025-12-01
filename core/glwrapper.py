@@ -2,8 +2,6 @@ from OpenGL.GL import *
 import numpy as np
 import inspect
 
-import core
-
 # an OpenGL wrapper class that is always at the end of the plugin queue.
 class GLWrapper:
     _uniforms = {} # dictionary of { PROGRAM : { ULOC_1 : (UNIFORM_NAME_1, UNIFORM_1), ULOC_2 : (UNIFORM_NAME_2, UNIFORM_2), ... } }
@@ -106,11 +104,11 @@ class GLWrapper:
             if arr.ndim == 2:
                 rows, cols = arr.shape
                 if (rows, cols) == (2, 2):
-                    glUniformMatrix2fv(uloc, 1, GL_FALSE, arr)
+                    glUniformMatrix2fv(uloc, 1, GL_TRUE, arr)
                 elif (rows, cols) == (3, 3):
-                    glUniformMatrix3fv(uloc, 1, GL_FALSE, arr)
+                    glUniformMatrix3fv(uloc, 1, GL_TRUE, arr)
                 elif (rows, cols) == (4, 4):
-                    glUniformMatrix4fv(uloc, 1, GL_FALSE, arr)
+                    glUniformMatrix4fv(uloc, 1, GL_TRUE, arr)
                 else:
                     print(f"Unsupported matrix size: {arr.shape}")
                     return False

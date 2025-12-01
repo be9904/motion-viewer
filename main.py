@@ -67,11 +67,15 @@ if __name__ == "__main__":
     # reference shaders
     shaders += core.SharedData.import_shaders()
 
+    ###############################################
     # Plugin.assemble()
+    ###############################################
     print(core.PluginQueue._plugin_queue)
     core.PluginQueue.call_plugins("assemble")
 
+    ###############################################
     # Plugin.init()
+    ###############################################
     core.PluginQueue.call_plugins("init")
     
     # setup camera matrices
@@ -79,19 +83,25 @@ if __name__ == "__main__":
         glw.set_uniform(shader.program, viewport_cam.view, "view_matrix")
         glw.set_uniform(shader.program, viewport_cam.projection, "projection_matrix")
 
+    ###############################################
     # Plugin.update(), Plugin.post_update()
+    ###############################################
     while not glfw.window_should_close(mv_window.glfw_window):
         mv_window.update()
-        core.PluginQueue.call_plugins("update")
         glw.update() # update uniforms
+        core.PluginQueue.call_plugins("update")
 
         mv_window.post_update()
         core.PluginQueue.call_plugins("post_update")
 
-    # Plugin.reset() in certain conditions
+    ###############################################
+    # Plugin.reset()
+    ###############################################
     # call_plugins(plugin_queue, "reset")
 
-    # Plugin.release() on reload
+    ###############################################
+    # Plugin.release()
+    ###############################################
     core.PluginQueue.call_plugins("release")
 
     mv_terminate()
