@@ -1,5 +1,5 @@
 ## Required Packages
 
 ```bash
-$ pip install PyOpenGL glfw
+$ pip install PyOpenGL PyOpenGL_accelerate glfw numpy-quaternion
 ```
